@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: SayHelloToMyLittleFriend
+    volumes:
+      - ./database/client_db/PLX.sql:/docker-entrypoint-initdb.d/init.sql
+
+  api_gateway:
+    build: ./backend/API_gateway
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
