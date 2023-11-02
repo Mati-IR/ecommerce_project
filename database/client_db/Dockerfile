@@ -1,4 +1,5 @@
-FROM ubuntu:latest
-LABEL authors="Mati"
+FROM mysql:latest
 
-ENTRYPOINT ["top", "-b"]
+EXPOSE 3306
+
+CMD ["mysqld"]

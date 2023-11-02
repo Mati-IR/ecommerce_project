@@ -3,11 +3,24 @@ version: '3.8'
 services:
   db:
     image: mysql:latest
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: SayHelloToMyLittleFriend
+    env_file:
+      - database/client_db/local.env
     volumes:
       - ./database/client_db/user_db.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3306:3306"
+    # pseudo terminal
+    tty: true
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    restart: always
+    ports:
+      - '8077:80'
+    environment:
+      - PMA_HOST=db
+    depends_on:
+      - db
 
   api_gateway:
     build: ./backend/API_gateway
