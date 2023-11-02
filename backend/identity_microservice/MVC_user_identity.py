@@ -4,7 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from databases import Database
 
-DATABASE_URL = "mysql+mysqlconnector://user:password@db:3306/usersdb"
+DATABASE_URL = "mysql+mysqlconnector://user:password@db:3306/SayHelloToMyLittleFriend"
 
 database = Database(DATABASE_URL)
 metadata = MetaData()
@@ -37,10 +37,17 @@ async def create_user(user: User):
     await database.execute(query)
     return user
 
-@app.get("/users/{user_id}")
-async def get_user(user_id: int):
+@app.get("/users/{user_id}/{password_hash}")
+async def get_user(user_id: int, password_hash: str):
+    if not database.is_connected:
+        raise HTTPException(status_code=500, detail="Database connection error.")
+
     query = User.__table__.select().where(User.id == user_id)
     user = await database.fetch_one(query)
+
     if not user:
         raise HTTPException(status_code=404, detail="User not found.")
+    elif user.password_hash != password_hash:
+        raise HTTPException(status_code=401, detail="Incorrect password.")
+
     return user

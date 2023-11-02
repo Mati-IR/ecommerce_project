@@ -1,3 +1,4 @@
+import httpx
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -19,6 +20,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+microservices = {
+    "identity": "http://localhost:8001"
+}
+
 @app.get("/")
 def read_root():
     return {"message": "Hello, this is my custom message!"}
@@ -26,3 +31,15 @@ def read_root():
 @app.get("/test")
 def test_connection():
     return {"status": "success", "message": "Connected successfully!"}
+
+@app.get("/login")
+async def login():
+
+# call identity mcroservice
+    async with httpx.AsyncClient() as client:
+        # get user from identity microservice by provided login and password
+        response = await client.get(microservices["identity"] + "/users/1")
+        if response.status_code == 200:
+            return {"status": "success", "message": "Login successful!"}
+        else:
+            return response.json()
