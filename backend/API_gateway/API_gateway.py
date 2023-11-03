@@ -1,6 +1,7 @@
 import httpx
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
+from user import SignInRequestModel, SignUpRequestModel, UserAuthResponseModel, UserUpdateRequestModel, UserResponseModel
 
 app = FastAPI()
 
@@ -21,7 +22,7 @@ app.add_middleware(
 )
 
 microservices = {
-    "identity": "http://localhost:8001"
+    "identity": "http://host.docker.internal:8001"
 }
 
 @app.get("/")
@@ -32,14 +33,27 @@ def read_root():
 def test_connection():
     return {"status": "success", "message": "Connected successfully!"}
 
-@app.get("/login")
-async def login():
+@app.post("/login")
+async def login(request: Request, user_details: SignInRequestModel):
 
-# call identity mcroservice
+    # call identity microservice
     async with httpx.AsyncClient() as client:
         # get user from identity microservice by provided login and password
-        response = await client.get(microservices["identity"] + "/users/1")
+        response = await client.post(
+            microservices["identity"] + "/v1/signin",
+            json=user_details.dict()
+        )
+
         if response.status_code == 200:
-            return {"status": "success", "message": "Login successful!"}
+            # Extract the token and user details from the response
+            data = response.json()
+            return {
+                "status": "success",
+                "message": "Login successful!",
+                "token": data["token"],
+                "user": data["user"]
+            }
         else:
-            return response.json()
+            # Raise an HTTP exception with the error details from the identity microservice
+            details = response.json()
+            raise HTTPException(status_code=response.status_code, detail=details)

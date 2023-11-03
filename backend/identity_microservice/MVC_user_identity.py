@@ -76,7 +76,7 @@ def get_all_users_api(credentials: HTTPAuthorizationCredentials = Security(secur
     if (auth_handler.decode_token(token)):
         user = get_all_users()
         return JSONResponse(status_code=200, content=jsonable_encoder(user))
-    return JSONResponse(status_code=401, content={'error': 'Faild to authorize'})
+    return JSONResponse(status_code=401, content={'error': 'Failed to authorize'})
 
 
 @app.get("/v1/user/{user_id}", response_model=UserResponseModel)
@@ -88,7 +88,7 @@ def get_user_api(user_id: int, credentials: HTTPAuthorizationCredentials = Secur
     if (auth_handler.decode_token(token)):
         user = get_user_by_id(user_id)
         return JSONResponse(status_code=200, content=jsonable_encoder(user))
-    return JSONResponse(status_code=401, content={'error': 'Faild to authorize'})
+    return JSONResponse(status_code=401, content={'error': 'Failed to authorize'})
 
 
 @app.post("/v1/user/update", response_model=UserResponseModel)
@@ -100,7 +100,7 @@ def update_user_api(user_details: UserUpdateRequestModel, credentials: HTTPAutho
     if (auth_handler.decode_token(token)):
         user = update_user(user_details)
         return JSONResponse(status_code=200, content=jsonable_encoder(user))
-    return JSONResponse(status_code=401, content={'error': 'Faild to authorize'})
+    return JSONResponse(status_code=401, content={'error': 'Failed to authorize'})
 
 
 ###############################
@@ -123,3 +123,7 @@ def not_secret_data_api():
     This not-secret API is just for testing.
     """
     return 'Not secret data'
+
+@app.get("/test")
+def test_connection():
+    return {"status": "success", "message": "MVC_user_identity - Connected successfully!"}
