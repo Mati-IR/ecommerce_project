@@ -2,14 +2,15 @@ from pathlib import Path
 import os
 import pymysql.cursors
 from pymysql import converters
-
+from dotenv import load_dotenv
 
 converions = converters.conversions
 converions[pymysql.FIELD_TYPE.BIT] = lambda x: False if x == b'\x00' else True
-
+# load env file from parent/local.env
+load_dotenv(Path(__file__).parent.parent / 'local.env')
 
 def init_connection():
-    connection = pymysql.connect(host=os.getenv("DATABASE_HOST"),
+    connection = pymysql.connect(host=os.environ.get("DATABASE_HOST"),
                                  port=3306,
                                  user=os.environ.get("DATABASE_USERNAME"),
                                  password=os.environ.get("DATABASE_PASSWORD"),

@@ -9,12 +9,12 @@ from user import Auth, SignInRequestModel, SignUpRequestModel, UserAuthResponseM
 app = FastAPI()
 
 origins = [
-    "http://localhost",
-    "http://localhost:8000",
-    "http://localhost:3000",
-    "http://localhost:3001",
-    "http://localhost:4000",
-    "http://localhost:19006"
+    "host.docker.internal",
+    "host.docker.internal:8000",
+    "host.docker.internal:3000",
+    "host.docker.internal:3001",
+    "host.docker.internal:4000",
+    "host.docker.internal:19006"
 ]
 app.add_middleware(
     CORSMiddleware,
