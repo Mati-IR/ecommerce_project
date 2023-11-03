@@ -1,6 +1,7 @@
-httpx~=0.25.0
-fastapi~=0.104.0
-SQLAlchemy~=1.4.49
-databases~=0.8.0
-aiomysql~=0.0.21
-mysql-connector-python
+fastapi==0.101.1
+uvicorn==0.23.2
+pyjwt==2.8.0
+passlib[bcrypt]==1.7.4
+pymysql==1.0.2
+cryptography==41.0.3
+pydantic[email]==2.2.1
