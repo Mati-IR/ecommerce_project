@@ -1,14 +1,16 @@
 version: '3.8'
 
 services:
-  db:
-    image: mysql:latest
-    env_file:
-      - database/client_db/local.env
+  users_db:
+    container_name: users_db
+    platform: linux/x86_64
+    build: ./database/client_db
     volumes:
       - ./database/client_db/user_db.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "3306:3306"
+    env_file:
+      - ./database/client_db/local.env
     # pseudo terminal
     tty: true
 
@@ -18,20 +20,18 @@ services:
     ports:
       - '8077:80'
     environment:
-      - PMA_HOST=db
-    depends_on:
-      - db
+      - PMA_HOST=users_db
 
   api_gateway:
     build: ./backend/API_gateway
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      - users_db
 
   identity_mvc:
     build: ./backend/identity_microservice
     ports:
       - "8001:8001"
     depends_on:
-      - db
+      - users_db
