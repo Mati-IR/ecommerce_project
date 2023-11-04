@@ -43,11 +43,11 @@ CREATE TABLE `users` (
   `id` int NOT NULL,
   `name` varchar(200) NOT NULL,
   `email` varchar(100) NOT NULL,
-  `phone` int NOT NULL,
+  `phone` varchar(30) NOT NULL,
   `city` varchar(100) NOT NULL,
-  `postal_code` varchar(100) NOT NULL,
+  `postal_code` varchar(10) NOT NULL,
   `street` varchar(100) NOT NULL,
-  `street_number` int NOT NULL,
+  `street_number` varchar(15) NOT NULL,
   `website` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
