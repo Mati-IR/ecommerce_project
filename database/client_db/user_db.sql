@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `PLX`
+-- Database: `users_db`
 --
 
 -- --------------------------------------------------------
@@ -26,6 +26,18 @@ SET time_zone = "+00:00";
 --
 -- Struktura tabeli dla tabeli `users`
 --
+-- Create a new user 'newuser' with password 'newpassword'
+-- CREATE USER 'db_user'@'%' IDENTIFIED BY 'db_user';
+
+-- Grant all privileges on the 'testdb' database to 'newuser'
+-- GRANT ALL PRIVILEGES ON testdb.* TO 'newuser'@'%';
+
+-- Flush privileges to apply changes
+-- FLUSH PRIVILEGES;
+
+CREATE Database users_db;
+USE users_db;
+
 
 CREATE TABLE `users` (
   `id` int NOT NULL,
