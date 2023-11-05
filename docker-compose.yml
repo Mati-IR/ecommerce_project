@@ -14,6 +14,7 @@ services:
       - ./database/client_db/local.env
     # pseudo terminal
     tty: true
+
   listings_db:
     container_name: listings_db
     platform: linux/x86_64

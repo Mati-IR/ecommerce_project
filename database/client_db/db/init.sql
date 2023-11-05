@@ -1,34 +1,3 @@
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
---
--- Database: `users_db`
---
-
--- --------------------------------------------------------
-
---
--- Struktura tabeli dla tabeli `users`
---
--- Create a new user 'newuser' with password 'newpassword'
--- CREATE USER 'db_user'@'%' IDENTIFIED BY 'db_user';
-
--- Grant all privileges on the 'testdb' database to 'newuser'
--- GRANT ALL PRIVILEGES ON testdb.* TO 'newuser'@'%';
-
--- Flush privileges to apply changes
--- FLUSH PRIVILEGES;
-
--- CREATE Database users_db;
--- USE users_db;
-
 
 CREATE TABLE `users` (
   `id` int NOT NULL,
@@ -97,7 +66,3 @@ ALTER TABLE `users_password`
 ALTER TABLE `users_password`
   ADD CONSTRAINT `users_password_fk0` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
