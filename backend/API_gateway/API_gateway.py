@@ -1,8 +1,13 @@
 import httpx
+import logging
+
+import uvicorn
 from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from user import SignInRequestModel, SignUpRequestModel, UserAuthResponseModel, UserUpdateRequestModel, UserResponseModel
 
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 app = FastAPI()
 
 origins = [
@@ -57,3 +62,33 @@ async def login(request: Request, user_details: SignInRequestModel):
             # Raise an HTTP exception with the error details from the identity microservice
             details = response.json()
             raise HTTPException(status_code=response.status_code, detail=details)
+
+@app.post("/register")
+async def register(request: Request, user_details: SignUpRequestModel):
+        logging.info(f"Received registration request for email: {user_details.email}")
+        # call identity microservice
+        async with httpx.AsyncClient() as client:
+            # get user from identity microservice by provided login and password
+            response = await client.post(
+                microservices["identity"] + "/v1/signup",
+                json=user_details.dict()
+            )
+
+            if response.status_code == 200:
+                # Extract the token and user details from the response
+                data = response.json()
+                return {
+                    "status": "success",
+                    "message": "Registration successful!",
+                    "token": data["token"],
+                    "user": data["user"]
+                }
+            else:
+                # log detailed error message
+                logging.error(f"Error while registering user: {response.json()}")
+                # Raise an HTTP exception with the error details from the identity microservice
+                details = response.json()
+                raise HTTPException(status_code=response.status_code, detail=details)
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)

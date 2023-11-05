@@ -22,20 +22,39 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Get the form data
         const registrationData = {
-            name: document.getElementById('regName').value,
+            first_name: document.getElementById('regFirstName').value,
+            last_name: document.getElementById('regLastName').value,
             email: document.getElementById('regEmail').value,
-            password: document.getElementById('regPassword').value
+            password: document.getElementById('regPassword').value,
+            phone_number: document.getElementById('regPhone').value,
+            street: document.getElementById('regStreet').value,
+            street_number: document.getElementById('regStreetNumber').value,
+            city: document.getElementById('regCity').value,
+            postal_code: document.getElementById('regZip').value,
+            website: document.getElementById('regWebsite').value
         };
+        console.log(JSON.stringify(registrationData));
+        // Send the registrationData to the API gateway for registration
+        fetch('http://127.0.0.1:8000/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(registrationData)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Network response was not ok: ${response.statusText}`);
+                }
+                return response.json();
 
-        // TODO: Send the registrationData to your server for processing
-        // For demonstration purposes, we'll just log it
-        console.log('User Registration Data:', registrationData);
-
-        // Clear the form fields after submission
-        event.target.reset();
-
-        // Optionally, show a success message or redirect the user
-        alert('Registration successful!'); // This is just for demonstration. Consider using a more user-friendly way to notify the user.
+            })
+            .then(data => {
+                // Handle successful registration
+                // For demonstration purposes, we'll just show an alert
+                alert('Registration successful!');
+            })
+        //event.target.reset();
     });
 
     // Handle the login form submission
@@ -78,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
         // Clear the form fields after submission
-        event.target.reset();
+        //event.target.reset();
     });
 
 });

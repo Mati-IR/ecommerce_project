@@ -13,7 +13,7 @@ def register_user(user_model: UserUpdateRequestModel):
             status_code=409, detail='Email user already exist.')
     hashed_password = auth_handler.encode_password(user_model.password)
     query_put("""
-                INSERT INTO user (
+                INSERT INTO users (
                     first_name,
                     last_name,
                     email,
@@ -45,7 +45,7 @@ def signin_user(email, password):
 def update_user(user_model: UserUpdateRequestModel):
     hashed_password = auth_handler.encode_password(user_model.password)
     query_put("""
-            UPDATE user 
+            UPDATE users 
                 SET first_name = %s,
                     last_name = %s,
                     email = %s,
@@ -71,7 +71,7 @@ def get_all_users():
             user.first_name,
             user.last_name,
             user.email
-        FROM user
+        FROM users
         """, ())
     return user
 
@@ -84,7 +84,7 @@ def get_user_by_email(email: str):
             user.last_name,
             user.email,
             user.password_hash
-        FROM user 
+        FROM users 
         WHERE email = %s
         """, (email))
     return user
@@ -97,7 +97,7 @@ def get_user_by_id(id: int):
             user.first_name,
             user.last_name,
             user.email,
-        FROM user 
+        FROM users 
         WHERE id = %s
         """, (id))
     return user

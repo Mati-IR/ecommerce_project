@@ -7,10 +7,16 @@ class SignInRequestModel(BaseModel):
 
 
 class SignUpRequestModel(BaseModel):
-    email: EmailStr
-    password: str
     first_name: str
     last_name: str
+    email: EmailStr
+    password: str
+    phone_number: str
+    street: str
+    street_number: str
+    city: str
+    postal_code: str
+    website: str
 
 
 class UserUpdateRequestModel(BaseModel):
