@@ -1,0 +1,26 @@
+.myButton {
+	background-color:#e77c24;
+	border-radius:10px;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:20px;
+	font-weight:bold;
+	padding:15px 32px;
+	text-decoration:none;
+}
+.myButton:hover {
+	background-color:#e77c24;
+}
+.myButton:active {
+	position:relative;
+	top:1px;
+}
+
+.gradient-custom {
+/* fallback for old browsers */
+background: rgb(0,0,0);
+
+background: radial-gradient(circle at 10% 20%, rgb(255, 131, 61) 0%, rgb(249, 183, 23) 90%);
+}
