@@ -1,12 +1,3 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Host: db
--- Generation Time: Paź 26, 2023 at 02:33 PM
--- Wersja serwera: 8.1.0
--- Wersja PHP: 8.2.11
-
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
@@ -35,8 +26,8 @@ SET time_zone = "+00:00";
 -- Flush privileges to apply changes
 -- FLUSH PRIVILEGES;
 
-CREATE Database users_db;
-USE users_db;
+-- CREATE Database users_db;
+-- USE users_db;
 
 
 CREATE TABLE `users` (

@@ -6,11 +6,22 @@ services:
     platform: linux/x86_64
     build: ./database/client_db
     volumes:
-      - ./database/client_db/user_db.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./database/client_db/db:/docker-entrypoint-initdb.d
+      - ./database/client_db/conf.d:/etc/mysql/conf.d
     ports:
-      - "3306:3306"
+      - "3307:3306"
     env_file:
       - ./database/client_db/local.env
+    # pseudo terminal
+    tty: true
+  listings_db:
+    container_name: listings_db
+    platform: linux/x86_64
+    build: ./database/listings_db
+    env_file:
+      - ./database/listings_db/local.env
+    ports:
+      - "3308:3306"
     # pseudo terminal
     tty: true
 
@@ -20,7 +31,8 @@ services:
     ports:
       - '8077:80'
     environment:
-      - PMA_HOST=users_db
+      - PMA_ARBITRARY=1
+      - PMA_HOSTS=users_db,listings_db
 
   api_gateway:
     build: ./backend/API_gateway
