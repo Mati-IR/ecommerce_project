@@ -9,8 +9,7 @@ CREATE TABLE IF NOT EXISTS `listings` (
   `description` TEXT,
   `price` DECIMAL(10, 2) NOT NULL,
   `location` VARCHAR(255) NOT NULL,
-  `category_id` INT NOT NULL,
-  FOREIGN KEY (`category_id`) REFERENCES `categories`(`id`) ON DELETE CASCADE
+  `category_id` INT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Listing Photos Table
@@ -41,3 +40,5 @@ INSERT INTO `categories` (`name`, `description`) VALUES
 ('Free Stuff', 'Items being given away for free'),
 ('Pets', 'Pets for sale, adoption, and pet services'),
 ('Gigs', 'Short-term jobs and freelance opportunities');
+
+ALTER TABLE `listings` ADD CONSTRAINT `listings_category_fk0` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`);
