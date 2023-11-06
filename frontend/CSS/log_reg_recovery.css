@@ -1,0 +1,37 @@
+body {
+    background-image: url(../Resources/background.jpg);
+}
+.custom_button {
+    background-color: rgb(231, 123, 35);
+    border-color: #e77b24;
+}
+.custom_button:hover {
+    background-color: #873e23;
+    border-color: #873e23;
+}
+.custom_button:checked {
+    background-color: #873e23;
+    border-color: #873e23;
+}
+.custom_button:focus {
+    background-color: #873e23;
+    border-color: #873e23;
+    box-shadow: 0 0 0 0.25rem rgba(134, 61, 35,.25);
+}
+.custom_div{
+    background: rgba(255, 226, 186, 0.9);
+}
+.form-check-input:focus{
+    background-color: rgb(231, 123, 35);
+    border-color: #e77b24;
+}
+a{
+    color: #e77b24;
+}
+a:hover{
+    color: #873e23;
+}
+.form-control:focus{
+    border-color: rgba(134, 61, 35,.80);
+    box-shadow: 0 0 0 0.25rem rgba(134, 61, 35,.25);
+}

@@ -8,7 +8,9 @@ CREATE TABLE IF NOT EXISTS `listings` (
   `title` VARCHAR(255) NOT NULL,
   `description` TEXT,
   `price` DECIMAL(10, 2) NOT NULL,
-  `location` VARCHAR(255) NOT NULL
+  `location` VARCHAR(255) NOT NULL,
+  `category_id` INT NOT NULL,
+  FOREIGN KEY (`category_id`) REFERENCES `categories`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Listing Photos Table
