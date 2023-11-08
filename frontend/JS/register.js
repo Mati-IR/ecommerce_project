@@ -28,8 +28,9 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(data => {
                 // Handle successful registration
-                // For demonstration purposes, we'll just show an alert
-                alert('Registration successful!');
+                // Handle successful registration
+                alert('Registration successful! You can now log in.');
+                window.location.href = 'login.html'; // Redirect to login.html
             })
         //event.target.reset();
     });
