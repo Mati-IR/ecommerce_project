@@ -19,7 +19,7 @@ def register_user(user_model: SignUpRequestModel):
                 ) VALUES (%s,%s);
                 """,
               (
-                  f'{user_model.first_name} {user_model.last_name}',
+                  user_model.name,
                   user_model.email
               )
               )

@@ -55,7 +55,8 @@ async def login(request: Request, user_details: SignInRequestModel):
             return {
                 "status": "success",
                 "message": "Login successful!",
-                "token": data["token"],
+                "access_token": data["token"]["access_token"],  # Adjusted to match nested structure
+                "refresh_token": data["token"]["refresh_token"],  # Adjusted to match nested structure
                 "user": data["user"]
             }
         else:
