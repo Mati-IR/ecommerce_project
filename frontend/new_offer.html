@@ -9,6 +9,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="CSS/style.css">
+    <style>
+      #map {
+        height: 400px;
+        width: 100%;
+      }
+    </style>
   </head>
   <body>
     <div class="nav-color-main">
@@ -36,10 +42,38 @@
         </div>
       </nav>
     </div>
-    
-    <div class="footer">
-      <p>TO DO</p>
-      połączyć ikone z tekstem
+    <div class="main">
+      <form>
+        <h2>Dodaj ogłoszenie</h2>
+        <div class="div-decoration">
+          <div class="form-group">
+            <label for="title"><strong>Tytuł ogłoszenie</strong></label>
+            <input type="text" class="form-control" id="title" aria-describedby="titleHelp" placeholder="Np. Sprzedam opla" required minlength="1" maxlength="70" required>
+            <small id="titleHelp" class="form-text text-muted">Podpowiedź</small>
+          </div>
+          <div class="form-group">
+            <label for="category"><strong>Kategoria</strong></label>
+            <input type="text" class="form-control" id="category" placeholder="Podaj kategorie ogłoszenia" required>
+          </div>
+          <div class="form-group">
+            <label for="describe"><strong>Opis</strong></label>
+            <textarea id="describe" name="describe" class="form-control" cols="50" required></textarea>
+          </div>
+        </div>
+        <div class="div-decoration">
+          <div class="form-group">
+            <label for="price"><strong>Cena</strong></label>
+            <input type="text" class="form-control" id="price" required>
+          </div>
+        </div>
+        <div class="div-decoration">
+          <div class="form-group">
+            <label for="address"><strong>Wprowadź adres:</strong></label>
+            <input type="text" id="address" class="form-control" placeholder="Wprowadź adres" required>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary custom_button">Dodaj</button>
+      </form>
     </div>
   </body>
 </html>
