@@ -29,7 +29,6 @@ CREATE TABLE IF NOT EXISTS `categories` (
 
 -- Insert extended categories
 INSERT INTO `categories` (`name`, `description`) VALUES
-('For Sale', 'Items for sale by owner'),
 ('Jobs', 'Job listings and employment opportunities'),
 ('Housing', 'Real estate, rentals, and shared accommodations'),
 ('Services', 'Local services offered by professionals and businesses'),
