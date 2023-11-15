@@ -11,7 +11,7 @@ load_dotenv(Path(__file__).parent.parent / 'local.env')
 
 def init_connection():
     connection = pymysql.connect(host=os.environ.get("DATABASE_HOST"),
-                                 port=3307,
+                                 port=int(os.environ.get("DATABASE_SOCKET")),
                                  user=os.environ.get("DATABASE_USERNAME"),
                                  password=os.environ.get("DATABASE_PASSWORD"),
                                  database=os.environ.get("DATABASE"),
@@ -24,7 +24,10 @@ def query_get(sql, param):
     connection = init_connection()
     with connection:
         with connection.cursor() as cursor:
-            cursor.execute(sql, param)
+            if param is not None:
+                cursor.execute(sql, param)
+            else:
+                cursor.execute(sql)
             return cursor.fetchall()
 
 
