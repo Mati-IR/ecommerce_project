@@ -29,7 +29,6 @@ CREATE TABLE IF NOT EXISTS `categories` (
 
 -- Insert extended categories
 INSERT INTO `categories` (`name`, `description`) VALUES
-('For Sale', 'Items for sale by owner'),
 ('Jobs', 'Job listings and employment opportunities'),
 ('Housing', 'Real estate, rentals, and shared accommodations'),
 ('Services', 'Local services offered by professionals and businesses'),
@@ -39,6 +38,15 @@ INSERT INTO `categories` (`name`, `description`) VALUES
 ('Clothing & Accessories', 'Apparel, shoes, and fashion accessories'),
 ('Free Stuff', 'Items being given away for free'),
 ('Pets', 'Pets for sale, adoption, and pet services'),
-('Gigs', 'Short-term jobs and freelance opportunities');
+('Gigs', 'Short-term jobs and freelance opportunities'),
+('Other', 'Everything else');
+
+CREATE TABLE IF NOT EXISTS `basket` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `user_id` INT NOT NULL,
+  `listing_id` INT NOT NULL,
+  FOREIGN KEY (`listing_id`) REFERENCES `listings`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 ALTER TABLE `listings` ADD CONSTRAINT `listings_category_fk0` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`);

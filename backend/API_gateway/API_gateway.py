@@ -5,6 +5,7 @@ import uvicorn
 from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from user import SignInRequestModel, SignUpRequestModel, UserAuthResponseModel, UserUpdateRequestModel, UserResponseModel
+from listing import ListingCreateRequestModel
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
@@ -27,7 +28,8 @@ app.add_middleware(
 )
 
 microservices = {
-    "identity": "http://host.docker.internal:8001"
+    "identity": "http://host.docker.internal:8001",
+    "listings": "http://host.docker.internal:8002"
 }
 
 @app.get("/")
@@ -91,5 +93,37 @@ async def register(request: Request, user_details: SignUpRequestModel):
                 details = response.json()
                 raise HTTPException(status_code=response.status_code, detail=details)
 
+@app.post("/create_listing")
+async def create_listing(request: Request, listing_details: ListingCreateRequestModel):
+    # call listing microservice
+    async with httpx.AsyncClient() as client:
+        # get user from identity microservice by provided login and password
+        response = await client.post(
+            microservices["listings"] + "/create_listing",
+            json=listing_details.dict()
+        )
+
+        if response.status_code == 200:
+            # Extract the token and user details from the response
+            data = response.json()
+            return {
+                "status": "success",
+                "message": "Listing created successfully!",
+                "listing": data["listing"]
+            }
+        else:
+            # Raise an HTTP exception with the error details from the identity microservice
+            details = response.json()
+            raise HTTPException(status_code=response.status_code, detail=details)
+        
+@app.get("/categories")
+async def get_categories():
+    # Forward the request to the listings microservice
+    async with httpx.AsyncClient() as client:
+        response = await client.get(microservices["listings"] + "/categories")
+        return response.json()
+    
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
+

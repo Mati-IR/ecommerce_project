@@ -24,7 +24,10 @@ def query_get(sql, param):
     connection = init_connection()
     with connection:
         with connection.cursor() as cursor:
-            cursor.execute(sql, param)
+            if param is not None:
+                cursor.execute(sql, param)
+            else:
+                cursor.execute(sql)
             return cursor.fetchall()
 
 
