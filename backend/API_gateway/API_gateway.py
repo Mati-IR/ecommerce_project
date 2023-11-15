@@ -115,5 +115,15 @@ async def create_listing(request: Request, listing_details: ListingCreateRequest
             # Raise an HTTP exception with the error details from the identity microservice
             details = response.json()
             raise HTTPException(status_code=response.status_code, detail=details)
+        
+@app.get("/categories")
+async def get_categories():
+    # Forward the request to the listings microservice
+    async with httpx.AsyncClient() as client:
+        response = await client.get(microservices["listings"] + "/categories")
+        return response.json()
+    
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
+

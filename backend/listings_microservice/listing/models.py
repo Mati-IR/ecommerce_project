@@ -7,3 +7,8 @@ class ListingCreateRequestModel(BaseModel):
     price: float
     location: str
     category_id: int
+
+class Category(BaseModel):
+    id: int
+    name: str
+    description: str

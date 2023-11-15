@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from .models import ListingCreateRequestModel
+from .models import ListingCreateRequestModel, Category
 from database.query import query_get, query_put, query_update
 
 def get_listing_by_title(title, creator_id):
@@ -62,3 +62,7 @@ def get_listing_by_id(listing_id):
                     """,
                      (listing_id,)
                      )
+
+def get_all_categories():
+    # Database query to fetch all categories
+    return query_get("SELECT id, name, description FROM categories;", None)

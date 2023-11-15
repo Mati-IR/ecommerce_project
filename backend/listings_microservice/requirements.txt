@@ -3,3 +3,4 @@ uvicorn
 pyjwt
 pymysql
 sqlalchemy
+cryptography
