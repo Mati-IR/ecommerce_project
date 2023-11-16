@@ -1,6 +1,20 @@
 version: '3.8'
 
 services:
+  ftp-server:
+    image: fauria/vsftpd
+    container_name: my-ftp-server
+    ports:
+      - "20:20"
+      - "21:21"
+      - "21100-21110:21100-21110"
+    volumes:
+      - /ścieżka/do/lokalnego/katalogu:/home/vsftpd/user
+    environment:
+      - FTP_USER=user
+      - FTP_PASS=password
+    restart: always
+
   users_db:
     container_name: users_db
     restart: always
@@ -50,7 +64,7 @@ services:
       - "8001:8001"
     depends_on:
       - users_db
-
+      
   listings_mvc:
     build: ./backend/listings_microservice
     ports:
