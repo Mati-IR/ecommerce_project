@@ -128,6 +128,14 @@ async def get_categories():
         return response.json()
     
 
+# get listing by ID
+@app.get("/listings/{listing_id}")
+async def get_listing_by_id(request: Request, listing_id: int):
+    # Forward the request to the listings microservice
+    async with httpx.AsyncClient() as client:
+        response = await client.get(microservices["listings"] + f"/listings/{listing_id}")
+        return response.json()
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
 
