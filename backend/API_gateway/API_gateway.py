@@ -7,8 +7,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from user import SignInRequestModel, SignUpRequestModel, UserAuthResponseModel, UserUpdateRequestModel, UserResponseModel
 from listing import ListingCreateRequestModel
 
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 app = FastAPI()
 
 origins = [
@@ -99,17 +100,20 @@ async def create_listing(request: Request, listing_details: ListingCreateRequest
     async with httpx.AsyncClient() as client:
         # get user from identity microservice by provided login and password
         response = await client.post(
-            microservices["listings"] + "/create_listing",
+            microservices["listings"] + "/listings/create",
             json=listing_details.dict()
         )
-
+        logger.info(f'response from listing microservice: {response}')
+        # print contents of response
+        logger.info(f'response.json(): {response.json()}')
         if response.status_code == 200:
-            # Extract the token and user details from the response
-            data = response.json()
+            # Extract the id from json response
+            listing_id = response.json()
+            logger.info(f'Listing created successfully! ID: {listing_id}')
             return {
                 "status": "success",
                 "message": "Listing created successfully!",
-                "listing": data["listing"]
+                "listing": listing_id
             }
         else:
             # Raise an HTTP exception with the error details from the identity microservice
