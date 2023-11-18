@@ -14,6 +14,13 @@ function getCategoryID(categoryID) {
     return category ? category.id : null;
 }
 
+function getListingByID(listingID) {
+    fetch("http://127.0.0.1:listings/" + listingID)
+        .then(response => response.json())
+        .then(data => {
+            return data;
+        });
+}
 
 document.addEventListener('DOMContentLoaded', function() {
 
