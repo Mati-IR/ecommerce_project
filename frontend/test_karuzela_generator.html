@@ -18,6 +18,14 @@
       height: auto;
       max-height: 400px; /* Maksymalna wysokość zdjęć w karuzeli */
       object-fit: cover; /* Zachowanie proporcji obrazów */
+      cursor: pointer; /* Zmiana kursora na wskaźnik */
+    }
+    .modal-content .modal-body {
+      text-align: center;
+    }
+    .modal-content .modal-body img {
+      max-width: 100%;
+      height: auto;
     }
   </style>
 </head>
@@ -70,6 +78,8 @@
         img.src = imageUrl;
         img.classList.add('d-block', 'w-100');
         img.alt = `Image ${index + 1}`;
+        img.setAttribute('data-bs-toggle', 'modal');
+        img.setAttribute('data-bs-target', '#imageModal');
 
         carouselItem.appendChild(img);
         carouselInner.appendChild(carouselItem);
@@ -100,20 +110,24 @@
       const myCarousel = new bootstrap.Carousel(carousel, {
         interval: false // Wyłączenie automatycznego przewijania
       });
+
+      // Obsługa powiększania zdjęć w modalu
+      const carouselImages = carousel.querySelectorAll('.carousel-item img');
+      carouselImages.forEach((img, index) => {
+        img.addEventListener('click', () => {
+          const modalImg = document.getElementById('enlargedImg');
+          modalImg.src = img.src;
+        });
+      });
     }
   }
 
   // Przykładowe obrazy do wygenerowania karuzeli
   const images = [
-    'https://via.placeholder.com/800x400/3498db/ffffff',
-    'https://via.placeholder.com/800x400/2ecc71/ffffff',
-    'https://via.placeholder.com/800x400/3498db/ffffff',
-    'https://via.placeholder.com/800x400/2ecc71/ffffff',
-    'https://via.placeholder.com/800x400/3498db/ffffff',
-    'https://via.placeholder.com/800x400/2ecc71/ffffff',
-    'https://via.placeholder.com/800x400/3498db/ffffff',
-    'https://via.placeholder.com/800x400/2ecc71/ffffff',
-    'https://via.placeholder.com/800x400/e74c3c/ffffff'
+    'https://ireland.apollo.olxcdn.com/v1/files/zoyy6lm0y5cf3-PL/image;s=516x361',
+    'https://ireland.apollo.olxcdn.com/v1/files/lozcth5iwrkt2-PL/image;s=516x361',
+    'https://static.wirtualnemedia.pl/media/top/kampaniaOLX-655.jpg',
+    'https://v.sadistic.pl/20090813/1250119537_e86_64.jpg'
   ];
 
   // Utwórz instancję konstruktora karuzeli i wygeneruj karuzelę
@@ -121,6 +135,31 @@
   carouselConstructor.generateCarousel();
 </script>
 
+<!-- Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img src="" class="img-fluid" id="enlargedImg" alt="Powiększone zdjęcie">
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  // Skrypt dla powiększania zdjęć w karuzeli
+  const carouselImages = document.querySelectorAll('.carousel-item img');
+  const enlargedImg = document.getElementById('enlargedImg');
+
+  carouselImages.forEach(img => {
+    img.addEventListener('click', function() {
+      enlargedImg.src = this.src;
+    });
+  });
+</script>
 <!-- Dodaj skrypty Bootstrapa i innych plików JavaScript, jeśli są potrzebne -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
