@@ -92,3 +92,7 @@ body{
 .readytotest{
 	color: yellowgreen;
 }
+
+.modal{
+	--bs-modal-width: 80%;
+}
