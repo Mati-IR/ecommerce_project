@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Konstruktor Karuzeli</title>
+  <!-- Dodaj linki do Bootstrapa i innych plików CSS, jeśli są potrzebne -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* Dodatkowe style mogą być dodane tutaj */
+    .carousel {
+      width: 100%;
+      max-width: 800px; /* Maksymalna szerokość karuzeli */
+      margin: 0 auto;
+    }
+    .carousel-item img {
+      width: 100%;
+      height: auto;
+      max-height: 400px; /* Maksymalna wysokość zdjęć w karuzeli */
+      object-fit: cover; /* Zachowanie proporcji obrazów */
+      cursor: pointer; /* Zmiana kursora na wskaźnik */
+    }
+    .modal-content .modal-body {
+      text-align: center;
+    }
+    .modal-content .modal-body img {
+      max-width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Konstruktor Karuzeli</h2>
+  <div id="carouselContainer"></div>
+</div>
+
+<!-- ... Pozostała część kodu HTML ... -->
+
+<script>
+  // Konstruktor karuzeli
+  class CarouselConstructor {
+    constructor(images) {
+      this.images = images;
+    }
+
+    generateCarousel() {
+      const carouselContainer = document.getElementById('carouselContainer');
+      const carousel = document.createElement('div');
+      carousel.classList.add('carousel', 'slide');
+
+      const carouselIndicators = document.createElement('div');
+      carouselIndicators.classList.add('carousel-indicators');
+
+      const carouselInner = document.createElement('div');
+      carouselInner.classList.add('carousel-inner');
+
+      this.images.forEach((imageUrl, index) => {
+        const carouselIndicator = document.createElement('button');
+        carouselIndicator.type = 'button';
+        carouselIndicator.dataset.bsTarget = '#carouselExampleIndicators';
+        carouselIndicator.dataset.bsSlideTo = index;
+        carouselIndicator.setAttribute('aria-label', `Slide ${index + 1}`);
+        if (index === 0) {
+          carouselIndicator.classList.add('active');
+        }
+
+        carouselIndicators.appendChild(carouselIndicator);
+
+        const carouselItem = document.createElement('div');
+        carouselItem.classList.add('carousel-item');
+        if (index === 0) {
+          carouselItem.classList.add('active');
+        }
+
+        const img = document.createElement('img');
+        img.src = imageUrl;
+        img.classList.add('d-block', 'w-100');
+        img.alt = `Image ${index + 1}`;
+        img.setAttribute('data-bs-toggle', 'modal');
+        img.setAttribute('data-bs-target', '#imageModal');
+
+        carouselItem.appendChild(img);
+        carouselInner.appendChild(carouselItem);
+      });
+
+      carousel.appendChild(carouselIndicators);
+      carousel.appendChild(carouselInner);
+
+      const prevButton = document.createElement('button');
+      prevButton.classList.add('carousel-control-prev');
+      prevButton.type = 'button';
+      prevButton.dataset.bsTarget = '.carousel';
+      prevButton.dataset.bsSlide = 'prev';
+      prevButton.innerHTML = '<span class="carousel-control-prev-icon" aria-hidden="true"></span><span class="visually-hidden">Previous</span>';
+
+      const nextButton = document.createElement('button');
+      nextButton.classList.add('carousel-control-next');
+      nextButton.type = 'button';
+      nextButton.dataset.bsTarget = '.carousel';
+      nextButton.dataset.bsSlide = 'next';
+      nextButton.innerHTML = '<span class="carousel-control-next-icon" aria-hidden="true"></span><span class="visually-hidden">Next</span>';
+
+      carousel.appendChild(prevButton);
+      carousel.appendChild(nextButton);
+
+      carouselContainer.appendChild(carousel);
+
+      const myCarousel = new bootstrap.Carousel(carousel, {
+        interval: false // Wyłączenie automatycznego przewijania
+      });
+
+      // Obsługa powiększania zdjęć w modalu
+      const carouselImages = carousel.querySelectorAll('.carousel-item img');
+      carouselImages.forEach((img, index) => {
+        img.addEventListener('click', () => {
+          const modalImg = document.getElementById('enlargedImg');
+          modalImg.src = img.src;
+        });
+      });
+    }
+  }
+
+  // Przykładowe obrazy do wygenerowania karuzeli
+  const images = [
+    'https://ireland.apollo.olxcdn.com/v1/files/zoyy6lm0y5cf3-PL/image;s=516x361',
+    'https://ireland.apollo.olxcdn.com/v1/files/lozcth5iwrkt2-PL/image;s=516x361',
+    'https://static.wirtualnemedia.pl/media/top/kampaniaOLX-655.jpg',
+    'https://v.sadistic.pl/20090813/1250119537_e86_64.jpg'
+  ];
+
+  // Utwórz instancję konstruktora karuzeli i wygeneruj karuzelę
+  const carouselConstructor = new CarouselConstructor(images);
+  carouselConstructor.generateCarousel();
+</script>
+
+<!-- Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img src="" class="img-fluid" id="enlargedImg" alt="Powiększone zdjęcie">
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  // Skrypt dla powiększania zdjęć w karuzeli
+  const carouselImages = document.querySelectorAll('.carousel-item img');
+  const enlargedImg = document.getElementById('enlargedImg');
+
+  carouselImages.forEach(img => {
+    img.addEventListener('click', function() {
+      enlargedImg.src = this.src;
+    });
+  });
+</script>
+<!-- Dodaj skrypty Bootstrapa i innych plików JavaScript, jeśli są potrzebne -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
