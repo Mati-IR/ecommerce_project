@@ -8,3 +8,8 @@ class ListingCreateRequestModel(BaseModel):
     price: float
     location: str
     category_id: int
+
+
+class AddToBasketRequestModel(BaseModel):
+    listing_id: int
+    user_id: int

@@ -5,7 +5,7 @@ import uvicorn
 from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from user import SignInRequestModel, SignUpRequestModel, UserAuthResponseModel, UserUpdateRequestModel, UserResponseModel
-from listing import ListingCreateRequestModel
+from listing import ListingCreateRequestModel, AddToBasketRequestModel
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -30,7 +30,8 @@ app.add_middleware(
 
 microservices = {
     "identity": "http://host.docker.internal:8001",
-    "listings": "http://host.docker.internal:8002"
+    "listings": "http://host.docker.internal:8002",
+    "basket": "http://host.docker.internal:8003"
 }
 
 @app.get("/")
@@ -135,6 +136,20 @@ async def get_listing_by_id(request: Request, listing_id: int):
     async with httpx.AsyncClient() as client:
         response = await client.get(microservices["listings"] + f"/listings/{listing_id}")
         return response.json()
+    
+@app.get("/basket/{user_id}")
+async def get_basket(request: Request, user_id: int):
+    # Forward the request to the basket microservice
+    async with httpx.AsyncClient() as client:
+        response = await client.get(microservices["basket"] + f"/get_basket/{user_id}")
+        return response.json()
+    
+@app.post("/basket/add_product/{listing_id}/{user_id}")
+async def add_product(request: Request, listing_id: int, user_id: int):
+    async with httpx.AsyncClient() as client:
+        response = await client.post(microservices["basket"] + f"/add_product", json={"listing_id": listing_id, "user_id": user_id})
+        return response.json()
+    
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
