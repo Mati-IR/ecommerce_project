@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test Page</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Random Recommendations</h2>
+                <input type="number" id="randomCount" class="form-control" placeholder="Enter Count">
+                <button onclick="getRandomRecommendation()" class="btn btn-primary mt-2">Get Recommendations</button>
+                <pre id="randomResponse"></pre>
+            </div>
+            <div class="col-md-6">
+                <h2>Recommendations by Category</h2>
+                <input type="number" id="categoryId" class="form-control" placeholder="Enter Category ID">
+                <input type="number" id="productCount" class="form-control mt-2" placeholder="Enter Product Count">
+                <button onclick="getCategoryRecommendation()" class="btn btn-success mt-2">Get Recommendations</button>
+                <pre id="categoryResponse"></pre>
+            </div>
+        </div>
+    </div>
+
+    <script src="JS/recommendation.js"></script>
+</body>
+</html>

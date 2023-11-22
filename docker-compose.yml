@@ -78,3 +78,10 @@ services:
       - "8003:8003"
     depends_on:
       - listings_db
+
+  recommendation_mvc:
+    build: ./backend/recommendation_microservice
+    ports:
+      - "8004:8004"
+    depends_on:
+      - listings_db
