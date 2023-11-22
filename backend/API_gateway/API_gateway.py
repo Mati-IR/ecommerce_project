@@ -29,9 +29,10 @@ app.add_middleware(
 )
 
 microservices = {
-    "identity": "http://host.docker.internal:8001",
-    "listings": "http://host.docker.internal:8002",
-    "basket": "http://host.docker.internal:8003"
+    "identity":          "http://host.docker.internal:8001",
+    "listings":          "http://host.docker.internal:8002",
+    "basket":            "http://host.docker.internal:8003",
+    "recommendation":    "http://host.docker.internal:8004"
 }
 
 @app.get("/")
@@ -150,6 +151,17 @@ async def add_product(request: Request, listing_id: int, user_id: int):
         response = await client.post(microservices["basket"] + f"/add_product", json={"listing_id": listing_id, "user_id": user_id})
         return response.json()
     
+@app.get("/recommendationRandom/{count}")
+async def get_recommendation(request: Request, count: int):
+    async with httpx.AsyncClient() as client:
+        response = await client.get(microservices["recommendation"] + f"/recommendationRandom", params={"count": count})
+        return response.json()
+    
+@app.get("/recommendationByCategory/{category_id}/{product_count}")
+async def get_recommendation(request: Request, category_id: int, product_count: int):
+    async with httpx.AsyncClient() as client:
+        response = await client.get(f"{microservices['recommendation']}/recommendationByCategory", params={"category_id": category_id, "product_count": product_count})
+        return response.json()
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
