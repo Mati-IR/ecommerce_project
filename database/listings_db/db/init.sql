@@ -44,8 +44,7 @@ INSERT INTO `categories` (`name`, `description`) VALUES
 CREATE TABLE IF NOT EXISTS `basket` (
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `user_id` INT NOT NULL,
-  `listing_id` INT NOT NULL,
-  FOREIGN KEY (`listing_id`) REFERENCES `listings`(`id`) ON DELETE CASCADE
+  `listing_id` INT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 

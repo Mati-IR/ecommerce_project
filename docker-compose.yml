@@ -71,3 +71,10 @@ services:
       - "8002:8002"
     depends_on:
         - listings_db
+
+  basket_mvc:
+    build: ./backend/basket_microservice
+    ports:
+      - "8003:8003"
+    depends_on:
+      - listings_db
