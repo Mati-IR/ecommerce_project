@@ -49,3 +49,4 @@ CREATE TABLE IF NOT EXISTS `basket` (
 
 
 ALTER TABLE `listings` ADD CONSTRAINT `listings_category_fk0` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`);
+ALTER TABLE `basket` ADD CONSTRAINT `basket_listing_fk0` FOREIGN KEY (`listing_id`) REFERENCES `listings` (`id`);

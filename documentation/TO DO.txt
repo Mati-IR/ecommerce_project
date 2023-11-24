@@ -1,0 +1,7 @@
+-Poprawic schematy bazy danych
+-Poprawci schemat dockera
+-	3 std
+	3 dfd szczegółowe
+	1 dfd kontekstowy
+	1 dfd ogólny
+	1 erd

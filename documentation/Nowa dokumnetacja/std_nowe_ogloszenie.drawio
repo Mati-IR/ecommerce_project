@@ -1,0 +1,110 @@
+<mxfile host="app.diagrams.net" modified="2023-11-24T19:37:23.686Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36" etag="Pl9nxsnH0dX3LhHyyzEU" version="22.1.4" type="device">
+  <diagram name="Strona-1" id="m2hwy-yEYKnMjjd5xzhW">
+    <mxGraphModel dx="989" dy="523" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="RbcO56KSEdpdyuwYfeh2-1" value="Użytkownik kilka przycisk dodaj nowe ogłoszenie" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="160" y="130" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="RbcO56KSEdpdyuwYfeh2-2" value="" style="html=1;verticalAlign=bottom;startArrow=oval;startFill=1;endArrow=block;startSize=8;curved=0;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" target="RbcO56KSEdpdyuwYfeh2-1">
+          <mxGeometry width="60" relative="1" as="geometry">
+            <mxPoint x="40" y="160" as="sourcePoint" />
+            <mxPoint x="160" y="160" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="RbcO56KSEdpdyuwYfeh2-3" value="Użytkownik wpisuje dane ogłoszenia" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="400" y="130" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="RbcO56KSEdpdyuwYfeh2-4" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="RbcO56KSEdpdyuwYfeh2-1" target="RbcO56KSEdpdyuwYfeh2-3">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="390" y="240" as="sourcePoint" />
+            <mxPoint x="440" y="190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="RbcO56KSEdpdyuwYfeh2-5" value="System wyświetla&lt;br&gt;&amp;nbsp;kreator ogłoszenia" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="RbcO56KSEdpdyuwYfeh2-4">
+          <mxGeometry x="-0.0006" relative="1" as="geometry">
+            <mxPoint y="-20" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="RbcO56KSEdpdyuwYfeh2-7" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.75;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="RbcO56KSEdpdyuwYfeh2-3" target="RbcO56KSEdpdyuwYfeh2-9">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="390" y="240" as="sourcePoint" />
+            <mxPoint x="730" y="80" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="490" y="75" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="RbcO56KSEdpdyuwYfeh2-8" value="Użytkownik anuluje dodanie ogłoszenia" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="RbcO56KSEdpdyuwYfeh2-7">
+          <mxGeometry x="-0.2059" y="1" relative="1" as="geometry">
+            <mxPoint x="56" y="-14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="RbcO56KSEdpdyuwYfeh2-9" value="" style="ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#ff0000;" vertex="1" parent="1">
+          <mxGeometry x="710" y="60" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="RbcO56KSEdpdyuwYfeh2-10" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="RbcO56KSEdpdyuwYfeh2-3" target="RbcO56KSEdpdyuwYfeh2-12">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="390" y="240" as="sourcePoint" />
+            <mxPoint x="290" y="240" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="460" y="240" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="RbcO56KSEdpdyuwYfeh2-11" value="Użytkownik klika przycisk dodaj" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="RbcO56KSEdpdyuwYfeh2-10">
+          <mxGeometry x="0.1821" relative="1" as="geometry">
+            <mxPoint y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="RbcO56KSEdpdyuwYfeh2-12" value="System sprawdza czy wszystkie wymagane dane są wpisane" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="160" y="210" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="RbcO56KSEdpdyuwYfeh2-13" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="RbcO56KSEdpdyuwYfeh2-12" target="RbcO56KSEdpdyuwYfeh2-3">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="390" y="310" as="sourcePoint" />
+            <mxPoint x="500" y="300" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="220" y="300" />
+              <mxPoint x="560" y="300" />
+              <mxPoint x="560" y="160" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="RbcO56KSEdpdyuwYfeh2-14" value="Nie podano wszystkich danych" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="RbcO56KSEdpdyuwYfeh2-13">
+          <mxGeometry x="-0.1362" y="-1" relative="1" as="geometry">
+            <mxPoint x="-13" y="-11" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="RbcO56KSEdpdyuwYfeh2-15" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="RbcO56KSEdpdyuwYfeh2-12" target="RbcO56KSEdpdyuwYfeh2-16">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="390" y="310" as="sourcePoint" />
+            <mxPoint x="80" y="370" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="80" y="240" />
+              <mxPoint x="80" y="400" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="RbcO56KSEdpdyuwYfeh2-17" value="Podano wszystkie &lt;br&gt;wymagane dane" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="RbcO56KSEdpdyuwYfeh2-15">
+          <mxGeometry x="0.5592" y="1" relative="1" as="geometry">
+            <mxPoint x="19" y="-19" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="RbcO56KSEdpdyuwYfeh2-16" value="System dodaje nowe ogłoszenie" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="370" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="RbcO56KSEdpdyuwYfeh2-18" value="" style="ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#ff0000;" vertex="1" parent="1">
+          <mxGeometry x="445" y="385" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="RbcO56KSEdpdyuwYfeh2-19" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="RbcO56KSEdpdyuwYfeh2-16" target="RbcO56KSEdpdyuwYfeh2-18">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="390" y="310" as="sourcePoint" />
+            <mxPoint x="440" y="260" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
