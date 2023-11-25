@@ -1,0 +1,58 @@
+<mxfile host="app.diagrams.net" modified="2023-11-25T10:48:15.162Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36" version="22.1.4" etag="MCm16XKL4nHgMPHvavdI" type="device">
+  <diagram id="50Z_d68iQI4UWySaN1U5" name="Strona-1">
+    <mxGraphModel dx="1434" dy="772" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="PtB5pUF4yF301E6nRsz_-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="PtB5pUF4yF301E6nRsz_-1" target="PtB5pUF4yF301E6nRsz_-7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="PtB5pUF4yF301E6nRsz_-1" value="Użytkownik" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="PtB5pUF4yF301E6nRsz_-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="PtB5pUF4yF301E6nRsz_-4" target="PtB5pUF4yF301E6nRsz_-1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="PtB5pUF4yF301E6nRsz_-4" value="3.4 Wysłanie komunikatu o rezultacie operacji&amp;nbsp;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="565" y="250" width="90" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="PtB5pUF4yF301E6nRsz_-19" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="PtB5pUF4yF301E6nRsz_-5" target="PtB5pUF4yF301E6nRsz_-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="PtB5pUF4yF301E6nRsz_-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="PtB5pUF4yF301E6nRsz_-5" target="PtB5pUF4yF301E6nRsz_-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="PtB5pUF4yF301E6nRsz_-5" value="3.3 Dodanie ogłoszenia do ulubionych" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="570" y="40" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="PtB5pUF4yF301E6nRsz_-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="PtB5pUF4yF301E6nRsz_-6" target="PtB5pUF4yF301E6nRsz_-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="PtB5pUF4yF301E6nRsz_-6" value="3.2 Wysłanie żądania o dodanie ogłoszenia do ulubionych&amp;nbsp;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="330" y="30" width="100" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="PtB5pUF4yF301E6nRsz_-14" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="PtB5pUF4yF301E6nRsz_-7" target="PtB5pUF4yF301E6nRsz_-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="PtB5pUF4yF301E6nRsz_-7" value="3.1 Użytkownik wciska przycisku dodania do ulubionych" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="170" y="30" width="100" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="PtB5pUF4yF301E6nRsz_-8" value="basket" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="690" y="60" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="PtB5pUF4yF301E6nRsz_-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="PtB5pUF4yF301E6nRsz_-10" target="PtB5pUF4yF301E6nRsz_-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="PtB5pUF4yF301E6nRsz_-10" value="users" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="414" y="190" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="PtB5pUF4yF301E6nRsz_-16" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="PtB5pUF4yF301E6nRsz_-11" target="PtB5pUF4yF301E6nRsz_-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="PtB5pUF4yF301E6nRsz_-11" value="listings" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="220" y="190" width="120" height="40" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
