@@ -1,23 +1,8 @@
 version: '3.8'
 
 services:
-  ftp-server:
-    image: fauria/vsftpd
-    container_name: my-ftp-server
-    ports:
-      - "20:20"
-      - "21:21"
-      - "21100-21110:21100-21110"
-    volumes:
-      - /ścieżka/do/lokalnego/katalogu:/home/vsftpd/user
-    environment:
-      - FTP_USER=user
-      - FTP_PASS=password
-    restart: always
-
   users_db:
     container_name: users_db
-    restart: always
     platform: linux/x86_64
     build: ./database/client_db
     volumes:
@@ -32,7 +17,6 @@ services:
 
   listings_db:
     container_name: listings_db
-    restart: always
     platform: linux/x86_64
     build: ./database/listings_db
     env_file:
@@ -44,7 +28,6 @@ services:
 
   phpmyadmin:
     image: phpmyadmin:latest
-    restart: always
     ports:
       - '8077:80'
     environment:

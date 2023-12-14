@@ -1,0 +1,1 @@
+Jeśli serwer www nie laduje zamian na froncie zastosować kombinacje w przeglądarce CTRL+SHIFT+R
