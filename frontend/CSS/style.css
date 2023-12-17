@@ -144,7 +144,7 @@ body{
 	align-items:center;
 	font-size:1.5vw;
 }
-.data{ 
+.date{ 
 	grid-area: 3 / 3 / 4 / 4; 
 	display: flex;
 	justify-content:center;
