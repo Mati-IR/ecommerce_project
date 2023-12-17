@@ -72,6 +72,23 @@ def get_listing_by_id(listing_id):
                      (listing_id,)
                      )
 
+def get_listings_by_ids(listings_ids):
+    return query_get("""
+                    SELECT
+                        id,
+                        creator_id,
+                        creation_date,
+                        title,
+                        description,
+                        price,
+                        location,
+                        category_id
+                    FROM listings
+                    WHERE id IN %s;
+                    """,
+                     (listings_ids,)
+                     )
+
 def get_all_categories():
     # Database query to fetch all categories
     return query_get("SELECT id, name, description FROM categories;", None)

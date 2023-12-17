@@ -27,12 +27,20 @@ app.add_middleware(
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-@app.get("/listings/{listing_id}")
+@app.get("/listing/{listing_id}")
 def read_listing(listing_id: int):
     db_listing = crud.get_listing_by_id(listing_id=listing_id)
     if db_listing is None:
         raise HTTPException(status_code=404, detail="Listing not found")
     return db_listing
+
+@app.get("/listings/{listings_ids}")
+def read_listings(listings_ids: str):
+    listings_ids = listings_ids.split(",")
+    db_listings = crud.get_listings_by_ids(listings_ids=listings_ids)
+    if db_listings is None:
+        raise HTTPException(status_code=404, detail="Listing not found")
+    return db_listings
 
 @app.post("/listings/create", response_model=int)
 def create_listing(listing: ListingCreateRequestModel) -> int:

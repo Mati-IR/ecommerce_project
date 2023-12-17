@@ -37,7 +37,7 @@ microservices = {
 
 @app.get("/")
 def read_root():
-    return {"message": "Hello, this is my custom message!"}
+    return {"message": "Hello, this is API Gateway!"}
 
 @app.get("/test")
 def test_connection():
@@ -135,7 +135,7 @@ async def get_categories():
 async def get_listing_by_id(request: Request, listing_id: int):
     # Forward the request to the listings microservice
     async with httpx.AsyncClient() as client:
-        response = await client.get(microservices["listings"] + f"/listings/{listing_id}")
+        response = await client.get(microservices["listings"] + f"/listing/{listing_id}")
         return response.json()
     
 @app.get("/basket/{user_id}")
@@ -161,6 +161,16 @@ async def get_recommendation(request: Request, count: int):
 async def get_recommendation(request: Request, category_id: int, product_count: int):
     async with httpx.AsyncClient() as client:
         response = await client.get(f"{microservices['recommendation']}/recommendationByCategory", params={"category_id": category_id, "product_count": product_count})
+        return response.json()
+    
+@app.get("/listingsByCategory/{category_id}/{product_count}")
+async def get_listings_by_category(request: Request, category_id: int, product_count: int):
+    async with httpx.AsyncClient() as client:
+        recommendations = await client.get(f"{microservices['recommendation']}/recommendationByCategory", params={"category_id": int(category_id), "product_count": int(product_count)}, timeout=30)
+        logging.info(f"recommendations: {recommendations.json()}")
+        ids = ",".join([str(r["id"]) for r in recommendations.json()])
+        logging.info(f"ids: {ids}")
+        response = await client.get(f"{microservices['listings']}/listings/{ids}", timeout=30)
         return response.json()
 
 if __name__ == "__main__":
