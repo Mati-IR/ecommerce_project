@@ -28,7 +28,7 @@ const dataFromJSON = [
       div.innerHTML = `
         <div class="photo"> <img src="${item.photoSrc}" alt="Zdjęcie ogłoszenia"></div>
         <div class="title">${item.title}</div>
-        <div class="price">${item.price}</div>
+        <div class="price-pre">${item.price}</div>
         <div class="loc">${item.loc}</div>
         <div class="data">${item.data}</div>
         <div class="fav"> <i class="bi bi-heart fs-3 icon-decoration-preview"></i> </div>
