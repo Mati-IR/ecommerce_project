@@ -22,9 +22,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-################################
+########################################
 ######### recommendation APIs ##########
-################################
+########################################
 
 @app.get("/recommendationByCategory")
 def getRecommendationByCategory(category_id: int, product_count: int):
@@ -40,4 +40,4 @@ def getRecommendation(count: int):
 
 @app.get("/test")
 def test_connection():
-    return {"status": "success", "message": "MVC_basket - Connected successfully!"}
+    return {"status": "success", "message": "MVC_recommendation - Connected successfully!"}
