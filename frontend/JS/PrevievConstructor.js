@@ -17,7 +17,7 @@ const userIdIndex = 0;
       div.innerHTML = `
         <div class="photo"> <img src="${item.photoSrc}" alt="Zdjęcie ogłoszenia"></div>
         <div class="title">${item.title}</div>
-        <div class="price">${item.price} zł</div>
+        <div class="price-pre">${item.price} zł</div>
         <div class="loc">${item.location}</div>
         <div class="date">${dateOnlyString}</div>
       `;

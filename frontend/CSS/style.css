@@ -32,7 +32,6 @@
 	background: white;
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 	border-radius: 8px;
-	width: min-content;
 }
 
 .form-control {
@@ -128,7 +127,7 @@ body{
   	align-items:center;
 	  font-size:3vw; 
 }
-.price{
+.price-pre{
 	grid-area: 2 / 4 / 2 / 6;
 	display: flex;
   	justify-content:end;
