@@ -63,7 +63,7 @@ const userIdIndex = 0;
 
 let dataFromJSON = [];
 // save data from Api Gateway to dataFromJSON
-fetch(ApiGateway + 'listingsByCategory/1/2')
+fetch(ApiGateway + 'listingsByCategory/1/10')
     .then(response => response.json())
     .then(data => {
         dataFromJSON = data;
