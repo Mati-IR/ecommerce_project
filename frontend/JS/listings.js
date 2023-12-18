@@ -25,7 +25,7 @@ function getListingByID(listingID) {
 document.addEventListener('DOMContentLoaded', function() {
 
     // handle new listing creation
-    document.getElementById("newOfferForm").addEventListener("submit", function(event) {
+    document.getElementById("newOfferForm").addEventListener("submit", async function(event) {
         event.preventDefault(); // prevent the form from submitting the traditional way
         const storedUserData = JSON.parse(localStorage.getItem("user"));
         let userId  = storedUserData.id;
@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
             location: document.getElementById("address").value,
             category_id: getCategoryID(categories.find(cat => cat.name === document.getElementById("category").value).id)
         };
+
         // if null in any of the fields, alert user and end this event listener
         if (Object.values(newListingData).includes(null)) {
             alert("Please fill in all fields!");
@@ -47,33 +48,41 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // send the newListingData to the API gateway
-        fetch("http://127.0.0.1:8000/create_listing", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(newListingData)
-        })
-            .then(response => {
-                console.log(JSON.stringify(newListingData))
-                if (!response.ok) {
-                    throw new Error(`Network response was not ok: ${response.statusText}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                // handle successful listing creation
-                // assuming 'data' contains a token or user identifier
-                // window.location.href = "index.html"; // redirect to index.html
-                alert("Listing created successfully!")
-            })
-            .catch(error => {
-                // handle errors
-                console.error("Error:", error);
-                alert("Error creating listing!\n " + error);
-            });
-    }   
-    );
-});
+        // create FormData object
+        const formData = new FormData();
+        formData.append('listingData', JSON.stringify(newListingData));
 
+        // append each selected file to the FormData
+        const imageInput = document.getElementById('images');
+        for (let i = 0; i < imageInput.files.length; i++) {
+            formData.append('images', imageInput.files[i]);
+        }
+
+        try {
+            // send the FormData to the API gateway using Fetch API with the "multipart/form-data" content type
+            const response = await fetch("http://127.0.0.1:8000/create_listing", {
+                method: "POST",
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error(`Network response was not ok: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            // handle successful listing creation
+            // assuming 'data' contains a token or user identifier
+            // window.location.href = "index.html"; // redirect to index.html
+            alert("Listing created successfully!");
+        } catch (error) {
+            // handle errors
+            console.error("Error:", error);
+            alert("Error creating listing!\n " + error);
+            // print data sent to API gateway
+            console.log("Data sent to API gateway: " + JSON.stringify(newListingData));
+            console.log("Images sent to API gateway: " + imageInput.files);
+            console.log("Amount of images sent to API gateway: " + imageInput.files.length);
+            console.log("FormData sent to API gateway: " + formData)
+        }
+    });
+});

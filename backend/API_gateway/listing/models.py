@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-
+from typing import List
 
 class ListingCreateRequestModel(BaseModel):
     creator_id: int
@@ -8,6 +8,7 @@ class ListingCreateRequestModel(BaseModel):
     price: float
     location: str
     category_id: int
+    images: List[str] = []
 
 
 class AddToBasketRequestModel(BaseModel):

@@ -1,6 +1,9 @@
 from fastapi import HTTPException
 from .models import ListingCreateRequestModel, Category
 from database.query import query_get, query_put, query_update
+from fastapi.datastructures import FormData
+from fastapi import File, UploadFile
+from typing import List
 
 #setup logger
 import logging
@@ -92,3 +95,25 @@ def get_listings_by_ids(listings_ids):
 def get_all_categories():
     # Database query to fetch all categories
     return query_get("SELECT id, name, description FROM categories;", None)
+
+# Function to upload photos to FTP server
+def upload_photos_to_ftp(images: List[UploadFile], ftp_directory: str):
+    # FTP server connection details
+    ftp_host = "your_ftp_host"
+    ftp_user = "your_ftp_user"
+    ftp_password = "your_ftp_password"
+
+    # Connect to FTP server
+    with FTP(ftp_host) as ftp:
+        ftp.login(user=ftp_user, passwd=ftp_password)
+
+        # Create directory if it doesn't exist
+        ftp.mkd(ftp_directory)
+
+        # Change to the specified directory
+        ftp.cwd(ftp_directory)
+
+        # Upload each image to the FTP server
+        for image in images:
+            with image.file as file:
+                ftp.storbinary(f"STOR {image.filename}", file)

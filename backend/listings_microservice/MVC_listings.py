@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from listing import models, crud
 from listing.models import ListingCreateRequestModel
 import logging
+from fastapi.datastructures import FormData
+from typing import List
 
 app = FastAPI()
 
@@ -26,6 +28,20 @@ app.add_middleware(
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Function to get category name based on category_id
+def get_category_name(category_id: int):
+    # Fetch categories from the database
+    categories = crud.get_all_categories()
+
+    # Find the category with the matching category_id
+    category = next((cat for cat in categories if cat["id"] == category_id), None)
+
+    # Return the category name if found, or raise an exception
+    if category:
+        return category["name"]
+    else:
+        raise HTTPException(status_code=404, detail="Category not found")
 
 @app.get("/listing/{listing_id}")
 def read_listing(listing_id: int):
@@ -57,6 +73,8 @@ def create_listing(listing: ListingCreateRequestModel) -> int:
         logger.error(f"Error in create_listing: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
+# returns id, name, description
 @app.get("/categories")
 def get_categories():
     # Logic to fetch categories from the database

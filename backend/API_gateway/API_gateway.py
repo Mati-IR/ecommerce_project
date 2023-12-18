@@ -2,10 +2,12 @@ import httpx
 import logging
 
 import uvicorn
-from fastapi import FastAPI, HTTPException, Depends, Request
+from fastapi import FastAPI, HTTPException, Depends, Request, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from user import SignInRequestModel, SignUpRequestModel, UserAuthResponseModel, UserUpdateRequestModel, UserResponseModel
 from listing import ListingCreateRequestModel, AddToBasketRequestModel
+from fastapi.datastructures import FormData
+from typing import List
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -96,31 +98,52 @@ async def register(request: Request, user_details: SignUpRequestModel):
                 details = response.json()
                 raise HTTPException(status_code=response.status_code, detail=details)
 
+from fastapi import File, UploadFile
+
 @app.post("/create_listing")
-async def create_listing(request: Request, listing_details: ListingCreateRequestModel):
-    # call listing microservice
+async def create_listing(
+    request: Request,
+    listing_details: ListingCreateRequestModel,
+):
+    # Log the request content
+    logger.info(f"Received request to create listing: {listing_details.json()}")
+    logger.info(f"Listing in original model: {listing_details}")
+
+    # Convert listing_details to a dictionary
+    listing_data = listing_details.dict()
+
+    # Add the listing details to the FormData
+    form_data = FormData()
+    form_data.add_field(name="listing_data", value=json.dumps(listing_data), content_type="application/json")
+
+    # Add each image to the FormData
+    for image in images:
+        form_data.add_field(name="images", value=image.file, filename=image.filename)
+
+    # Send the request to the listings microservice
     async with httpx.AsyncClient() as client:
-        # get user from identity microservice by provided login and password
         response = await client.post(
             microservices["listings"] + "/listings/create",
-            json=listing_details.dict()
+            files=form_data,
         )
-        logger.info(f'response from listing microservice: {response}')
-        # print contents of response
-        logger.info(f'response.json(): {response.json()}')
+
+        logger.info(f'Response from listing microservice: {response}')
+        logger.info(f'Response.json(): {response.json()}')
+
         if response.status_code == 200:
-            # Extract the id from json response
+            # Extract the id from the JSON response
             listing_id = response.json()
             logger.info(f'Listing created successfully! ID: {listing_id}')
             return {
                 "status": "success",
                 "message": "Listing created successfully!",
-                "listing": listing_id
+                "listing": listing_id,
             }
         else:
-            # Raise an HTTP exception with the error details from the identity microservice
+            # Raise an HTTP exception with the error details from the listings microservice
             details = response.json()
             raise HTTPException(status_code=response.status_code, detail=details)
+
         
 @app.get("/categories")
 async def get_categories():
