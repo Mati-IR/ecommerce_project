@@ -27,7 +27,8 @@
 	background-color: wheat;
  }
  .div-decoration{
-	margin: 1%;
+	margin-top: 1%;
+	margin-bottom: 1%;
 	padding: 20px;
 	background: white;
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -159,4 +160,21 @@ body{
 }
 .icon-decoration-preview{
 	color: #e77c24;
+}
+
+.profil-decoration{
+	display: flex;
+	justify-content:end;
+	align-items:center;
+}
+
+.col-left{
+	border-right-color: #873e23;
+	border-right-style: double;
+}
+
+.row-decoration{
+	border-color: #873e23;
+	border-style: double;
+	padding: 4px;
 }
