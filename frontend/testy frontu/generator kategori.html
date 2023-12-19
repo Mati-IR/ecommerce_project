@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <title>Generator kółek z kategoriami - Dwurzędowa tabela</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Style kółek */
+    .category-circle {
+      display: inline-block;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: #007bff; /* Możesz zmienić kolor tła */
+      color: white;
+      text-align: center;
+      line-height: 50px;
+      margin: 5px;
+    }
+
+    /* Styl dwurzędowej tabeli */
+    .category-table {
+      display: table;
+    }
+
+    .category-row {
+      display: table-row;
+    }
+
+    .category-cell {
+      display: table-cell;
+      vertical-align: top;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="category-table" id="categories">
+    <!-- Tabela kategorii zostanie wygenerowana tutaj -->
+  </div>
+
+  <script>
+    // Lista kategorii (możesz zmienić na swoją listę)
+    const categories = ['Technologia', 'Sport', 'Edukacja', 'Motoryzacja', 'Muzyka', 'Sport', 'Edukacja', 'Motoryzacja', 'Muzyka', 'Sport', 'Edukacja', 'Motoryzacja', 'Muzyka', 'Sport', 'Edukacja', 'Motoryzacja', 'Muzyka'];
+
+    // Funkcja generująca kółka z nazwami kategorii w dwurzędowej tabeli
+    function generateCategoryTable(categoriesList) {
+      const categoriesContainer = document.getElementById('categories');
+
+      let currentRow;
+      categoriesList.forEach((category, index) => {
+        if (index % 5 === 0) {
+          currentRow = document.createElement('div');
+          currentRow.classList.add('category-row');
+          categoriesContainer.appendChild(currentRow);
+        }
+
+        const cell = document.createElement('div');
+        cell.classList.add('category-cell');
+        
+        const circle = document.createElement('div');
+        circle.classList.add('category-circle');
+        circle.textContent = category.substring(0, 1); // Pobiera pierwszą literę kategorii
+
+        cell.appendChild(circle);
+        cell.appendChild(document.createElement('br')); // Dodaje odstęp
+        cell.appendChild(document.createTextNode(category)); // Dodaje nazwę kategorii poniżej kółka
+        currentRow.appendChild(cell);
+      });
+    }
+
+    // Generowanie kółek z kategoriami w dwurzędowej tabeli
+    generateCategoryTable(categories);
+  </script>
+</body>
+</html>
