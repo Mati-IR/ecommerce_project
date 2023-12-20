@@ -178,3 +178,39 @@ body{
 	border-style: double;
 	padding: 4px;
 }
+
+.categories-grid {
+	display: grid;
+	grid-template-columns: repeat(5, 1fr);
+	gap: 20px;
+	justify-items: center;
+  }
+
+  .category-cell {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+  }
+
+  .icon-circle {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width:5vw;
+	height:5vw;
+	border-radius: 50%;
+	background-color: #873e23;
+  }
+
+  .icon-color {
+	color: white; /* Tutaj możesz zmienić kolor ikon */
+	font-size: 3vw;
+  }
+
+.category-div{
+	background-color: wheat; 
+	border-bottom-style:double; 
+	border-color: #873e23; 
+	padding: 1%; 
+}
