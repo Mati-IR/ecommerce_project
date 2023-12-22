@@ -2,16 +2,44 @@ import httpx
 import logging
 
 import uvicorn
-from fastapi import FastAPI, HTTPException, Depends, Request, File, UploadFile
+from fastapi import FastAPI, HTTPException, Depends, Request, File, UploadFile, Form, status
 from fastapi.middleware.cors import CORSMiddleware
-from user import SignInRequestModel, SignUpRequestModel, UserAuthResponseModel, UserUpdateRequestModel, UserResponseModel
-from listing import ListingCreateRequestModel, AddToBasketRequestModel
 from fastapi.datastructures import FormData
-from typing import List
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from listing import ListingCreateRequestModel, AddToBasketRequestModel
+from typing import List, Any
+from user import SignInRequestModel, SignUpRequestModel, UserAuthResponseModel, UserUpdateRequestModel, UserResponseModel
+import json
+import os
+import uuid
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
+# Configure logging for uvicorn
+logging.config.dictConfig({
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'app.log',
+            'formatter': 'standard',
+        },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+    'formatters': {
+        'standard': {
+            'format': '%(asctime)s [%(levelname)s] [%(name)s] [%(filename)s:%(lineno)d] - %(message)s',
+        },
+    },
+})
 app = FastAPI()
 
 origins = [
@@ -44,6 +72,13 @@ def read_root():
 @app.get("/test")
 def test_connection():
     return {"status": "success", "message": "Connected successfully!"}
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+	exc_str = f'{exc}'.replace('\n', ' ').replace('   ', ' ')
+	logging.error(f"{request}: {exc_str}")
+	content = {'status_code': 10422, 'message': exc_str, 'data': None}
+	return JSONResponse(content=content, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 @app.post("/login")
 async def login(request: Request, user_details: SignInRequestModel):
@@ -103,8 +138,17 @@ from fastapi import File, UploadFile
 @app.post("/create_listing")
 async def create_listing(
     request: Request,
-    listing_details: ListingCreateRequestModel,
+    listing_details: ListingCreateRequestModel
 ):
+    try:
+        # Your existing code for processing the request
+
+        return {"status": "success", "message": "Listing created successfully!"}
+
+    except Exception as e:
+        # Log the request payload in case of a validation failure
+        logger.error(f"Validation failed. Request payload: {await request.body()}")
+        raise
     # Log the request content
     logger.info(f"Received request to create listing: {listing_details.json()}")
     logger.info(f"Listing in original model: {listing_details}")
@@ -144,14 +188,48 @@ async def create_listing(
             details = response.json()
             raise HTTPException(status_code=response.status_code, detail=details)
 
-        
+# Helper function to generate a unique filename
+def generate_unique_filename(listing_id: int, file_extension: str) -> str:
+    unique_id = str(uuid.uuid4())
+    return f"{listing_id}_{unique_id}.{file_extension}"
+
+# Endpoint to handle file uploads for a listing
+@app.post("/upload_photos")
+async def upload_photos(listing_id: int, files: List[UploadFile] = File(...)):
+    # Ensure the listing ID is valid (you may want to perform additional validation)
+    if listing_id <= 0:
+        raise HTTPException(status_code=400, detail="Invalid listing ID")
+
+    # Directory where photos are stored (customize this path as needed)
+    upload_dir = f"photos/{listing_id}"
+
+    # Create the directory if it doesn't exist
+    os.makedirs(upload_dir, exist_ok=True)
+
+    # List to store the generated filenames for response
+    file_names = []
+
+    for file in files:
+        # Generate a unique filename based on the listing ID and file extension
+        filename = generate_unique_filename(listing_id, file.filename.split(".")[-1])
+        file_path = os.path.join(upload_dir, filename)
+
+        # Save the file to the specified directory
+        with open(file_path, "wb") as file_object:
+            file_object.write(file.file.read())
+
+        # Append the generated filename to the response list
+        file_names.append(filename)
+
+    return JSONResponse(content={"uploaded_files": file_names}, status_code=200)
+
 @app.get("/categories")
 async def get_categories():
     # Forward the request to the listings microservice
     async with httpx.AsyncClient() as client:
         response = await client.get(microservices["listings"] + "/categories")
         return response.json()
-    
+
 
 # get listing by ID
 @app.get("/listings/{listing_id}")

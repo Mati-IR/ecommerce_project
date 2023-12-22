@@ -15,14 +15,14 @@ function getCategoryID(categoryID) {
 }
 
 function getListingByID(listingID) {
-    fetch("http://127.0.0.1:listings/" + listingID)
+    fetch("http://127.0.0.1:8000/" + listingID)
         .then(response => response.json())
         .then(data => {
             return data;
         });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+/* document.addEventListener('DOMContentLoaded', function() {
 
     // handle new listing creation
     document.getElementById("newOfferForm").addEventListener("submit", async function(event) {
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // get the form data
         const newListingData = {
-            /* Get creator_id from local storage */
+            // Get creator_id from local storage
             creator_id: userId,
             title: document.getElementById("title").value,
             description: document.getElementById("description").value,
@@ -85,4 +85,143 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log("FormData sent to API gateway: " + formData)
         }
     });
-});
+});*/
+
+/*
+function submitForm() {
+    event.preventDefault();
+    // Fetch form data
+    const storedUserData = JSON.parse(localStorage.getItem("user"));
+    const userId  = storedUserData.id;
+    const title = document.getElementById('title').value;
+    const selectedCategoryName = document.getElementById('category').value;
+    const description = document.getElementById('description').value;
+    const price = document.getElementById('price').value;
+    const location = document.getElementById('address').value;
+    const imagesInput = document.getElementById('images');
+
+    // Find category by name
+    const selectedCategory = categories.find(cat => cat.name === selectedCategoryName);
+
+    // Check if the category was found
+    if (!selectedCategory) {
+        console.error("Category not found: " + selectedCategoryName);
+        console.log("Available categories: " + categories.map(cat => cat.name).join(", "));
+        return;
+    }
+
+    // Get the category_id
+    const category_id = selectedCategory.id;
+    //const images = imagesInput.files;
+
+    const formData = new FormData();
+    formData.append('creator_id', userId);
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('price', price);
+    formData.append('location', location);
+    formData.append('category_id', category_id);
+
+    // Append each image file to FormData
+    /*for (let i = 0; i < imagesInput.files.length; i++) {
+        formData.append('images', imagesInput.files[i]);
+    }*/
+/*
+    console.log('creator_id:', userId);
+    console.log('title:', title);
+    console.log('description:', description);
+    console.log('price:', price);
+    console.log('location:', location);
+    console.log('category_id:', category_id);
+    //console.log('images:', images);
+    // Make API request to FastAPI application
+    fetch('http://127.0.0.1:8000/create_listing', {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+                alert("Error creating listing!\n " + error);
+        });
+}
+*/
+
+function uploadImages(image, listing_id) {
+    const formData = new FormData();
+    formData.append('listing_id', listing_id);
+    formData.append('image', image);
+
+    /*fetch('http://127.0.0.1:8000/upload_photos', {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert("Error uploading image!\n " + error);
+        });*/
+
+
+}
+function submitForm() {
+    event.preventDefault();
+
+    const storedUserData = JSON.parse(localStorage.getItem("user"));
+    let userId  = storedUserData.id;
+    const imagesInput = document.getElementById('images');
+    // get the form data
+    const newListingData = {
+        /* Get creator_id from local storage */
+        creator_id: userId,
+        title: document.getElementById("title").value,
+        description: document.getElementById("description").value,
+        price: document.getElementById("price").value,
+        location: document.getElementById("address").value,
+        category_id: getCategoryID(categories.find(cat => cat.name === document.getElementById("category").value).id)
+    };
+    // if null in any of the fields, alert user and end this event listener
+    if (Object.values(newListingData).includes(null)) {
+        alert("Please fill in all fields!");
+        console.error("Null value in fields: " + Object.keys(newListingData).find(key => newListingData[key] === null));
+        return;
+    }
+    console.log(newListingData);
+
+    response = fetch('http://127.0.0.1:8000/create_listing', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newListingData)
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            const listingId = data.listing;
+            console.log("listingId = " + listingId);
+
+            let listOfImages = [];
+            for (let i = 0; i < imagesInput.files.length; i++) {
+                listOfImages.push(imagesInput.files[i]);
+            }
+
+            console.log(response);
+            // wait until the listing is created
+            // then upload the images
+            uploadImages(listingId, listOfImages);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert("Error creating listing!\n " + error);
+        });
+
+
+}
