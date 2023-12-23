@@ -8,38 +8,17 @@ from fastapi.datastructures import FormData
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from listing import ListingCreateRequestModel, AddToBasketRequestModel
-from typing import List, Any
+from typing import List, Any, Annotated
 from user import SignInRequestModel, SignUpRequestModel, UserAuthResponseModel, UserUpdateRequestModel, UserResponseModel
 import json
 import os
 import uuid
+import multipart
+import logging.config
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-# Configure logging for uvicorn
-logging.config.dictConfig({
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'class': 'logging.FileHandler',
-            'filename': 'app.log',
-            'formatter': 'standard',
-        },
-    },
-    'loggers': {
-        '': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-    },
-    'formatters': {
-        'standard': {
-            'format': '%(asctime)s [%(levelname)s] [%(name)s] [%(filename)s:%(lineno)d] - %(message)s',
-        },
-    },
-})
+
 app = FastAPI()
 
 origins = [
@@ -79,6 +58,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 	logging.error(f"{request}: {exc_str}")
 	content = {'status_code': 10422, 'message': exc_str, 'data': None}
 	return JSONResponse(content=content, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
 
 @app.post("/login")
 async def login(request: Request, user_details: SignInRequestModel):
@@ -176,7 +156,7 @@ async def create_listing(
 
         if response.status_code == 200:
             # Extract the id from the JSON response
-            listing_id = response.json()
+            listing_id = response.json()["listing_id"]
             logger.info(f'Listing created successfully! ID: {listing_id}')
             return {
                 "status": "success",
@@ -195,33 +175,12 @@ def generate_unique_filename(listing_id: int, file_extension: str) -> str:
 
 # Endpoint to handle file uploads for a listing
 @app.post("/upload_photos")
-async def upload_photos(listing_id: int, files: List[UploadFile] = File(...)):
-    # Ensure the listing ID is valid (you may want to perform additional validation)
-    if listing_id <= 0:
-        raise HTTPException(status_code=400, detail="Invalid listing ID")
+async def upload_photos(fileb: UploadFile = File(None)):
+    return {"filename": fileb.filename}
 
-    # Directory where photos are stored (customize this path as needed)
-    upload_dir = f"photos/{listing_id}"
-
-    # Create the directory if it doesn't exist
-    os.makedirs(upload_dir, exist_ok=True)
-
-    # List to store the generated filenames for response
-    file_names = []
-
-    for file in files:
-        # Generate a unique filename based on the listing ID and file extension
-        filename = generate_unique_filename(listing_id, file.filename.split(".")[-1])
-        file_path = os.path.join(upload_dir, filename)
-
-        # Save the file to the specified directory
-        with open(file_path, "wb") as file_object:
-            file_object.write(file.file.read())
-
-        # Append the generated filename to the response list
-        file_names.append(filename)
-
-    return JSONResponse(content={"uploaded_files": file_names}, status_code=200)
+@app.post("/uploadfile/")
+async def create_upload_file(file: UploadFile):
+    return {"filename": file.filename}
 
 @app.get("/categories")
 async def get_categories():

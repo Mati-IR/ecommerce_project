@@ -151,26 +151,33 @@ function submitForm() {
 }
 */
 
-function uploadImages(image, listing_id) {
-    const formData = new FormData();
-    formData.append('listing_id', listing_id);
-    formData.append('image', image);
+async function uploadImages(images, listing_id) {
+    // check if images are files
+    if (!images[0] instanceof File) {
+        console.error("Images are not files!");
+        return;
+    }
+    console.log("Uploading image: " + images[0].name + " to listing: " + listing_id);
+    for (let i = 0; i < images.length; i++) {
+        let bodyFormData = new FormData();
+        bodyFormData.append('file', images[i]);
+        bodyFormData.append('listing_id', listing_id);
+        try {
+            const response = await fetch("http://127.0.0.1:8000/uploadfile", {
+                method: "POST",
+                body: bodyFormData
+            });
 
-    /*fetch('http://127.0.0.1:8000/upload_photos', {
-        method: 'POST',
-        body: formData
-    })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Success:', data);
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-            alert("Error uploading image!\n " + error);
-        });*/
 
-
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Error uploading images!\n " + error);
+        }
+    }
 }
+
+
+
 function submitForm() {
     event.preventDefault();
 
@@ -216,7 +223,7 @@ function submitForm() {
             console.log(response);
             // wait until the listing is created
             // then upload the images
-            uploadImages(listingId, listOfImages);
+            uploadImages(listOfImages, listingId);
         })
         .catch((error) => {
             console.error('Error:', error);
