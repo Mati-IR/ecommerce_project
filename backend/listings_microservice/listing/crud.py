@@ -117,3 +117,27 @@ def upload_photos_to_ftp(images: List[UploadFile], ftp_directory: str):
         for image in images:
             with image.file as file:
                 ftp.storbinary(f"STOR {image.filename}", file)
+
+def upload_file(listing_id, file: bytes):
+    logger.info(f"crud.upload_file Received request to upload file for listing_id: {listing_id}")
+    query_put("""
+                    INSERT INTO listing_photos (
+                        listing_id,
+                        photo
+                    ) VALUES (%s,%s);
+                    """,
+                  (
+                        listing_id,
+                        file
+                  )
+                  )
+
+def get_listing_photos(listing_id):
+    return query_get("""
+                    SELECT
+                        photo
+                    FROM listing_photos
+                    WHERE listing_id = %s;
+                    """,
+                     (listing_id,)
+                     )

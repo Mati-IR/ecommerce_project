@@ -116,55 +116,28 @@ async def register(request: Request, user_details: SignUpRequestModel):
 from fastapi import File, UploadFile
 
 @app.post("/create_listing")
-async def create_listing(
-    request: Request,
-    listing_details: ListingCreateRequestModel
-):
-    try:
-        # Your existing code for processing the request
-
-        return {"status": "success", "message": "Listing created successfully!"}
-
-    except Exception as e:
-        # Log the request payload in case of a validation failure
-        logger.error(f"Validation failed. Request payload: {await request.body()}")
-        raise
-    # Log the request content
-    logger.info(f"Received request to create listing: {listing_details.json()}")
-    logger.info(f"Listing in original model: {listing_details}")
-
-    # Convert listing_details to a dictionary
-    listing_data = listing_details.dict()
-
-    # Add the listing details to the FormData
-    form_data = FormData()
-    form_data.add_field(name="listing_data", value=json.dumps(listing_data), content_type="application/json")
-
-    # Add each image to the FormData
-    for image in images:
-        form_data.add_field(name="images", value=image.file, filename=image.filename)
-
-    # Send the request to the listings microservice
+async def create_listing(request: Request, listing_details: ListingCreateRequestModel):
+    # call listing microservice
     async with httpx.AsyncClient() as client:
+        # get user from identity microservice by provided login and password
         response = await client.post(
             microservices["listings"] + "/listings/create",
-            files=form_data,
+            json=listing_details.dict()
         )
-
-        logger.info(f'Response from listing microservice: {response}')
-        logger.info(f'Response.json(): {response.json()}')
-
+        logger.info(f'response from listing microservice: {response}')
+        # print contents of response
+        logger.info(f'response.json(): {response.json()}')
         if response.status_code == 200:
-            # Extract the id from the JSON response
-            listing_id = response.json()["listing_id"]
+            # Extract the id from json response
+            listing_id = response.json()
             logger.info(f'Listing created successfully! ID: {listing_id}')
             return {
                 "status": "success",
                 "message": "Listing created successfully!",
-                "listing": listing_id,
+                "listing": listing_id
             }
         else:
-            # Raise an HTTP exception with the error details from the listings microservice
+            # Raise an HTTP exception with the error details from the identity microservice
             details = response.json()
             raise HTTPException(status_code=response.status_code, detail=details)
 
@@ -173,14 +146,22 @@ def generate_unique_filename(listing_id: int, file_extension: str) -> str:
     unique_id = str(uuid.uuid4())
     return f"{listing_id}_{unique_id}.{file_extension}"
 
-# Endpoint to handle file uploads for a listing
-@app.post("/upload_photos")
-async def upload_photos(fileb: UploadFile = File(None)):
-    return {"filename": fileb.filename}
+@app.post("/uploadfile/{listing_id}")
+async def create_upload_file(file: UploadFile, listing_id: int):
+    # send file to listings microservice
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            microservices["listings"] + f"/listings/uploadfile/{listing_id}",
+            files={"file": (file.filename, file.file, file.content_type)},
+        )
+        return response.json()
 
-@app.post("/uploadfile/")
-async def create_upload_file(file: UploadFile):
-    return {"filename": file.filename}
+@app.get("/listings/{listing_id}/images")
+async def get_listing_images(request: Request, listing_id: int):
+    # Forward the request to the listings microservice
+    async with httpx.AsyncClient() as client:
+        response = await client.get(microservices["listings"] + f"/listings/{listing_id}/images")
+        return response.json()
 
 @app.get("/categories")
 async def get_categories():
