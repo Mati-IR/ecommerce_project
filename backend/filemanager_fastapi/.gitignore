@@ -1,0 +1,13 @@
+venv
+.env
+.vscode
+logs
+data
+certbot/letsecrypt/
+.DS_Store
+key.json
+docker-compose.yml
+nginx/sites/app.conf
+__pycache__/
+ *.pyc
+ .pytest_cache
