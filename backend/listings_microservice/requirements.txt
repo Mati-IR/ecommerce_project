@@ -4,3 +4,5 @@ pyjwt
 pymysql
 sqlalchemy
 cryptography
+starlette
+aiofiles

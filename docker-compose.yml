@@ -40,6 +40,9 @@ services:
       - "8000:8000"
     depends_on:
       - users_db
+    #setup environment variable FILE_MANAGER_KEY here without importing local.env file
+    environment:
+      - FILE_MANAGER_KEY=OF7uzRZOWe9EkM14O/zIvvzFrQ/a/+zhmxYNwi5GLgSw8B6wiQkVZuu7H6Tyf4bNKZGNdxKXi1yAShJVmZY66Q==
 
   identity_mvc:
     build: ./backend/identity_microservice
@@ -68,3 +71,25 @@ services:
       - "8004:8004"
     depends_on:
       - listings_db
+
+  file_manager_api:
+    build:
+      context: ./backend/filemanager_fastapi/api
+      args:
+        - INSTALL_FFMPEG=${INSTALL_FFMPEG}
+    volumes:
+      - './backend/filemanager_fastapi/api/app:/app'
+    command: /start-reload.sh
+    ports:
+      - 8080:80  # Adjust the port as needed
+    expose:
+      - 80
+    environment:
+      - CORS_ORIGINS=*
+      - FILE_MANAGER_BEARER_TOKEN=OF7uzRZOWe9EkM14O/zIvvzFrQ/a/+zhmxYNwi5GLgSw8B6wiQkVZuu7H6Tyf4bNKZGNdxKXi1yAShJVmZY66Q==
+      - IMAGE_AllOWED_FILE_FORMAT=.jpeg,.jpg,.png,.gif,.webp,.svg,jpeg,jpg,png,gif,webp,svg
+      - SAVE_ORIGINAL=True
+      - PREFERED_STORAGE=local
+      - API_URL=http://localhost/
+      - IMAGE_ORIGINAL_LOCAL_PATH=/app/media/original
+      - IMAGE_THUMBNAIL_LOCAL_PATH=/app/media/thumbnail

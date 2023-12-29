@@ -1,5 +1,4 @@
 import httpx
-import logging
 
 import uvicorn
 from fastapi import FastAPI, HTTPException, Depends, Request, File, UploadFile, Form, status
@@ -14,10 +13,15 @@ import json
 import os
 import uuid
 import multipart
-import logging.config
+from fastapi.security import OAuth2AuthorizationCodeBearer
 
+
+#setup logger
+import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+FILE_MANAGER_KEY = os.environ.get("FILE_MANAGER_KEY")
 
 app = FastAPI()
 
@@ -41,7 +45,8 @@ microservices = {
     "identity":          "http://host.docker.internal:8001",
     "listings":          "http://host.docker.internal:8002",
     "basket":            "http://host.docker.internal:8003",
-    "recommendation":    "http://host.docker.internal:8004"
+    "recommendation":    "http://host.docker.internal:8004",
+    "file_manager":      "http://host.docker.internal:8080",
 }
 
 @app.get("/")
@@ -149,19 +154,31 @@ def generate_unique_filename(listing_id: int, file_extension: str) -> str:
 @app.post("/uploadfile/{listing_id}")
 async def create_upload_file(file: UploadFile, listing_id: int):
     # send file to listings microservice
-    async with httpx.AsyncClient() as client:
-        response = await client.post(
-            microservices["listings"] + f"/listings/uploadfile/{listing_id}",
-            files={"file": (file.filename, file.file, file.content_type)},
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+            microservices["file_manager"] + f"/image",
+            data={'thumbnail': 'False'},
+            files={'file': (file.filename, file.file)},
+            headers={'Authorization': f'Bearer {FILE_MANAGER_KEY}'},
         )
+
+        # wait for response
+        response.raise_for_status()
+        # print contents of response
+        logger.info(f'response from file manager microservice: {response.json()}')
         return response.json()
+    except httpx.RequestError as exc:
+        raise HTTPException(status_code=500, detail=f"Error communicating with file manager: {exc}, details: {exc.__dict__}")
 
 @app.get("/listings/{listing_id}/images")
 async def get_listing_images(request: Request, listing_id: int):
     # Forward the request to the listings microservice
     async with httpx.AsyncClient() as client:
-        response = await client.get(microservices["listings"] + f"/listings/{listing_id}/images")
+        # response = await client.get(microservices["listings"] + f"/listings/{listing_id}/images")
+
         return response.json()
+
 
 @app.get("/categories")
 async def get_categories():

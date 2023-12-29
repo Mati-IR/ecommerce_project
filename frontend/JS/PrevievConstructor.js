@@ -4,18 +4,43 @@ const ApiGateway = 'http://127.0.0.1:8000/';
 const userIdIndex = 0;
 
   // Funkcja do generowania struktury HTML na podstawie danych z pliku JSON
-  function generateHTMLFromJSON(listings, likedListings = []) {
+  async function generateHTMLFromJSON(listings, likedListings = []) {
     const parentContainer = document.getElementById('parentContainer');
     
-    listings.forEach(item => {
+    await Promise.all(listings.map(async item => {
       const div = document.createElement('div');
       div.classList.add('parent');
       const dateOnlyString = item.creation_date.substring(0, 10);
       const isLiked = likedListings.find(likedItem => likedItem.listing_id === item.id);
-      console.log("likedListings in generateHTMLFromJSON: " + likedListings);
-        
+      let imgUrl = null;
+  
+      try {
+        const response = await fetch(ApiGateway + 'listings/' + item.id + '/images');
+        const imagesData = await response.json(); // Assuming the response is JSON
+        console.log("images data: " + imagesData);
+        // above log returns images data: [object Object],[object Object], make it more readable
+        console.log("images data: " + JSON.stringify(imagesData));
+        //images data: [{"photo":"<starlette.datastructures.UploadFile object at 0x7f1a0e062490>","name":"404673160_748169777133845_9191890498475702534_n.png"},{"photo":"<starlette.datastructures.UploadFile object at 0x7f1a0e062b50>","name":"86hj4c.jpg"}]
+        // log types of fields
+        console.log("images data: " + typeof imagesData);
+
+        if (imagesData.length > 0) {
+          // Assuming the images array contains objects with the properties "photo" and "name"
+          const firstImage = imagesData[0];
+          
+          // Save the image URL
+          imgUrl = firstImage.photo;
+        } else {
+          console.error('No images found for listing:', item.id);
+        }
+      } catch (error) {
+        console.error('Error fetching images:', error);
+      }
+    
+      console.log("imgUrl: " + imgUrl);
+  
       div.innerHTML = `
-        <div class="photo"> <img src="${item.photoSrc}" alt="Zdjęcie ogłoszenia"></div>
+        <div class="photo"> <img src="${imgUrl}" alt="Zdjęcie ogłoszenia"></div>
         <div class="title">${item.title}</div>
         <div class="price-pre">${item.price} zł</div>
         <div class="loc">${item.location}</div>
@@ -31,7 +56,7 @@ const userIdIndex = 0;
         `;
       }
       parentContainer.appendChild(div);
-    });
+    }));
   }
 
   function getLikedListingIds(listings) {

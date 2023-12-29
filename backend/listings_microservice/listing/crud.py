@@ -4,6 +4,7 @@ from database.query import query_get, query_put, query_update
 from fastapi.datastructures import FormData
 from fastapi import File, UploadFile
 from typing import List
+import base64
 
 #setup logger
 import logging
@@ -96,48 +97,34 @@ def get_all_categories():
     # Database query to fetch all categories
     return query_get("SELECT id, name, description FROM categories;", None)
 
-# Function to upload photos to FTP server
-def upload_photos_to_ftp(images: List[UploadFile], ftp_directory: str):
-    # FTP server connection details
-    ftp_host = "your_ftp_host"
-    ftp_user = "your_ftp_user"
-    ftp_password = "your_ftp_password"
-
-    # Connect to FTP server
-    with FTP(ftp_host) as ftp:
-        ftp.login(user=ftp_user, passwd=ftp_password)
-
-        # Create directory if it doesn't exist
-        ftp.mkd(ftp_directory)
-
-        # Change to the specified directory
-        ftp.cwd(ftp_directory)
-
-        # Upload each image to the FTP server
-        for image in images:
-            with image.file as file:
-                ftp.storbinary(f"STOR {image.filename}", file)
-
 def upload_file(listing_id, file: bytes):
-    logger.info(f"crud.upload_file Received request to upload file for listing_id: {listing_id}")
+    logger.info(f"crud.upload_file Received request to upload file {file.filename} for listing_id: {listing_id}")
     query_put("""
                     INSERT INTO listing_photos (
                         listing_id,
-                        photo
-                    ) VALUES (%s,%s);
+                        photo,
+                        name
+                    ) VALUES (%s,%s, %s);
                     """,
                   (
                         listing_id,
-                        file
+                        file,
+                        file.filename
                   )
                   )
 
-def get_listing_photos(listing_id):
-    return query_get("""
+def get_listing_images(listing_id):
+    logger.info(f"crud.get_listing_images Received request to get listing images for listing_id: {listing_id}")
+    photos =  query_get("""
                     SELECT
-                        photo
+                        photo,
+                        name
                     FROM listing_photos
                     WHERE listing_id = %s;
                     """,
                      (listing_id,)
                      )
+    # log type of "photo"
+    # logger.info(f"crud.get_listing_images type of photos: {type(photos["photo"])}")
+    images = [{"photo": base64.b64encode(photo).decode(), "name": name} for (photo, name) in photos]
+    return images

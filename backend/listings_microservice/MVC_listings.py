@@ -98,6 +98,10 @@ def create_upload_file(listing_id: int, file: UploadFile = File(...)):
 def get_listing_images(listing_id: int):
     try:
         images = crud.get_listing_images(listing_id)
+        # logger.info(f"images: {images}")
+        # print type and value of images
+        logger.info(f"images: {type(images)}")
+        logger.info(f"images: {images}")
         return images
     except Exception as e:
         logger.error(f"Error in get_listing_images: {e}")
