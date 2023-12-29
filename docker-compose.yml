@@ -91,5 +91,6 @@ services:
       - SAVE_ORIGINAL=True
       - PREFERED_STORAGE=local
       - API_URL=http://localhost/
-      - IMAGE_ORIGINAL_LOCAL_PATH=/app/media/original
-      - IMAGE_THUMBNAIL_LOCAL_PATH=/app/media/thumbnail
+      - IMAGE_ORIGINAL_LOCAL_PATH=/app/media/original/
+      - IMAGE_THUMBNAIL_LOCAL_PATH=/app/media/thumbnail/
+      - QR_IMAGE_LOCAL_PATH=/app/media/qr/

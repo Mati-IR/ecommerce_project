@@ -82,13 +82,13 @@ def create_listing(listing: ListingCreateRequestModel) -> int:
         logger.error(f"Error in create_listing: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/listings/uploadfile/{listing_id}")
-def create_upload_file(listing_id: int, file: UploadFile = File(...)):
+@app.post("/listings/saveFileData/{listing_id}")
+def create_upload_file(listing_id: int, file_name: str, storage: str):
     # Log the request content
     # logger.info(f"Received request to upload file for listing_id: {listing_id}")
     # logger.info(f"Received request to upload file: {file.filename}")
     try:
-        crud.upload_file(listing_id, file)
+        crud.upload_file(listing_id, file_name, storage)
         return {"message": "File uploaded successfully"}
     except Exception as e:
         logger.error(f"Error in create_upload_file: {e}")
@@ -98,10 +98,6 @@ def create_upload_file(listing_id: int, file: UploadFile = File(...)):
 def get_listing_images(listing_id: int):
     try:
         images = crud.get_listing_images(listing_id)
-        # logger.info(f"images: {images}")
-        # print type and value of images
-        logger.info(f"images: {type(images)}")
-        logger.info(f"images: {images}")
         return images
     except Exception as e:
         logger.error(f"Error in get_listing_images: {e}")

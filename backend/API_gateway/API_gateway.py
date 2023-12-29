@@ -5,7 +5,8 @@ from fastapi import FastAPI, HTTPException, Depends, Request, File, UploadFile, 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.datastructures import FormData
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse, StreamingResponse
+import io
 from listing import ListingCreateRequestModel, AddToBasketRequestModel
 from typing import List, Any, Annotated
 from user import SignInRequestModel, SignUpRequestModel, UserAuthResponseModel, UserUpdateRequestModel, UserResponseModel
@@ -14,7 +15,6 @@ import os
 import uuid
 import multipart
 from fastapi.security import OAuth2AuthorizationCodeBearer
-
 
 #setup logger
 import logging
@@ -154,9 +154,11 @@ def generate_unique_filename(listing_id: int, file_extension: str) -> str:
 @app.post("/uploadfile/{listing_id}")
 async def create_upload_file(file: UploadFile, listing_id: int):
     # send file to listings microservice
+    file_manager_response = None
+    # upload file to file manager microservice
     try:
         async with httpx.AsyncClient() as client:
-            response = await client.post(
+            file_manager_response = await client.post(
             microservices["file_manager"] + f"/image",
             data={'thumbnail': 'False'},
             files={'file': (file.filename, file.file)},
@@ -164,20 +166,77 @@ async def create_upload_file(file: UploadFile, listing_id: int):
         )
 
         # wait for response
-        response.raise_for_status()
+        file_manager_response.raise_for_status()
         # print contents of response
-        logger.info(f'response from file manager microservice: {response.json()}')
-        return response.json()
+        logger.info(f'response from file manager microservice: {file_manager_response.json()}')
     except httpx.RequestError as exc:
         raise HTTPException(status_code=500, detail=f"Error communicating with file manager: {exc}, details: {exc.__dict__}")
+    
+    # send file details to listings microservice
+    # @app.post("/listings/saveFileData/{listing_id}")
+    # def create_upload_file(listing_id: int, file_name: str, file_type: str):
+
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+            microservices["listings"] + f"/listings/saveFileData/{listing_id}",
+            params={'file_name': file_manager_response.json()['file_name'], 'storage': file_manager_response.json()['storage']},
+        )
+
+        # wait for response
+        response.raise_for_status()
+        # print contents of response
+        logger.info(f'response from listings microservice: {response.json()}')
+    except httpx.RequestError as exc:
+        raise HTTPException(status_code=500, detail=f"Error communicating with listings: {exc}, details: {exc.__dict__}")
+    
+    return response.json()
 
 @app.get("/listings/{listing_id}/images")
 async def get_listing_images(request: Request, listing_id: int):
-    # Forward the request to the listings microservice
-    async with httpx.AsyncClient() as client:
-        # response = await client.get(microservices["listings"] + f"/listings/{listing_id}/images")
+    # get file_name and storage type from listings microservice
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+            microservices["listings"] + f"/listings/{listing_id}/images",
+        )
 
-        return response.json()
+        # wait for response
+        response.raise_for_status()
+        # print contents of response
+        logger.info(f'response from listings microservice: {response.json()}')
+    except httpx.RequestError as exc:
+        raise HTTPException(status_code=500, detail=f"Error communicating with listings: {exc}, details: {exc.__dict__}")
+    
+    if len(response.json()) == 0:
+        raise HTTPException(status_code=404, detail=f"Photos for listing with ID {listing_id} not found")
+    
+    file_data = response.json()
+    photos = []
+    logger.info(f'files: {file_data}')
+    # get file from file manager microservice
+    #for file in file_data:
+    try:
+        # logger.info(f'attempting to get file: {file_data[0]} of type: {file["storage"]}')
+        async with httpx.AsyncClient() as client:
+            file_manager_response = await client.get(
+            microservices["file_manager"] + f"/image",
+            params={'image': file_data[0]['photo_name'], 'image_type': 'original'},
+            headers={'Authorization': f'Bearer {FILE_MANAGER_KEY}'},
+        )
+        # Check if the response is successful
+        file_manager_response.raise_for_status()
+        logger.info(f'file_manager_response: {file_manager_response}')
+        logger.info(f'file_manager_response content: {file_manager_response.content}')
+
+        # Return the file
+        return StreamingResponse(io.BytesIO(file_manager_response.content), media_type="image/png")
+    except httpx.RequestError as exc:
+        logger.error(f'Error getting photo from file manager: {exc}')
+        raise HTTPException(status_code=500, detail=f"Error communicating with file manager: {exc}")
+    except ValueError as exc:
+        logger.error(f'Error handling file path: {exc}')
+        raise HTTPException(status_code=500, detail=f"Error handling file path: {exc}")
 
 
 @app.get("/categories")

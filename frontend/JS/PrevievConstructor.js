@@ -16,20 +16,10 @@ const userIdIndex = 0;
   
       try {
         const response = await fetch(ApiGateway + 'listings/' + item.id + '/images');
-        const imagesData = await response.json(); // Assuming the response is JSON
-        console.log("images data: " + imagesData);
-        // above log returns images data: [object Object],[object Object], make it more readable
-        console.log("images data: " + JSON.stringify(imagesData));
-        //images data: [{"photo":"<starlette.datastructures.UploadFile object at 0x7f1a0e062490>","name":"404673160_748169777133845_9191890498475702534_n.png"},{"photo":"<starlette.datastructures.UploadFile object at 0x7f1a0e062b50>","name":"86hj4c.jpg"}]
-        // log types of fields
-        console.log("images data: " + typeof imagesData);
-
-        if (imagesData.length > 0) {
-          // Assuming the images array contains objects with the properties "photo" and "name"
-          const firstImage = imagesData[0];
-          
-          // Save the image URL
-          imgUrl = firstImage.photo;
+        const blob = await response.blob();
+      
+        if (blob.size > 0) {
+          imgUrl = URL.createObjectURL(blob);
         } else {
           console.error('No images found for listing:', item.id);
         }

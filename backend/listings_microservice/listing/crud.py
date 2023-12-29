@@ -97,19 +97,19 @@ def get_all_categories():
     # Database query to fetch all categories
     return query_get("SELECT id, name, description FROM categories;", None)
 
-def upload_file(listing_id, file: bytes):
-    logger.info(f"crud.upload_file Received request to upload file {file.filename} for listing_id: {listing_id}")
+def upload_file(listing_id, file_name: str, storage: str):
+    logger.info(f"crud.upload_file Received request to upload file {file_name} of type {storage} for listing_id: {listing_id}")
     query_put("""
                     INSERT INTO listing_photos (
                         listing_id,
-                        photo,
-                        name
+                        photo_name,
+                        storage
                     ) VALUES (%s,%s, %s);
                     """,
                   (
                         listing_id,
-                        file,
-                        file.filename
+                        file_name,
+                        storage
                   )
                   )
 
@@ -117,14 +117,12 @@ def get_listing_images(listing_id):
     logger.info(f"crud.get_listing_images Received request to get listing images for listing_id: {listing_id}")
     photos =  query_get("""
                     SELECT
-                        photo,
-                        name
+                        photo_name,
+                        storage
                     FROM listing_photos
                     WHERE listing_id = %s;
                     """,
                      (listing_id,)
                      )
-    # log type of "photo"
-    # logger.info(f"crud.get_listing_images type of photos: {type(photos["photo"])}")
-    images = [{"photo": base64.b64encode(photo).decode(), "name": name} for (photo, name) in photos]
-    return images
+    logger.info(f"crud.get_listing_images photos: {photos}")
+    return photos
