@@ -226,8 +226,8 @@ async def get_listing_images(request: Request, listing_id: int):
         )
         # Check if the response is successful
         file_manager_response.raise_for_status()
-        logger.info(f'file_manager_response: {file_manager_response}')
-        logger.info(f'file_manager_response content: {file_manager_response.content}')
+        #logger.info(f'file_manager_response: {file_manager_response}')
+        #logger.info(f'file_manager_response content: {file_manager_response.content}')
 
         # Return the file
         return StreamingResponse(io.BytesIO(file_manager_response.content), media_type="image/png")
@@ -266,6 +266,13 @@ async def get_basket(request: Request, user_id: int):
 async def add_product(request: Request, listing_id: int, user_id: int):
     async with httpx.AsyncClient() as client:
         response = await client.post(microservices["basket"] + f"/add_product", json={"listing_id": listing_id, "user_id": user_id})
+        return response.json()
+    
+@app.delete("/basket/remove_product/{listing_id}/{user_id}")
+async def remove_product(listing_id: int, user_id: int, request: Request):
+    async with httpx.AsyncClient() as client:
+        data = {"listing_id": listing_id, "user_id": user_id}
+        response = await client.request("DELETE", microservices["basket"] + f"/remove_product", json=data)
         return response.json()
     
 @app.get("/recommendationRandom/{count}")

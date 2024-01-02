@@ -46,11 +46,11 @@ def get_basket_api(user_id: int):
     return get_basket(user_id)
 
 @app.delete('/remove_product')
-def remove_product_api(listing_id: int, user_id: int):
+def remove_product_api(product : AddToBasketRequestModel):
     """
     This remove_product API allow you to remove product from your basket.
     """
-    productRemoved = remove_from_basket(listing_id, user_id)
+    productRemoved = remove_from_basket(product.listing_id, product.user_id)
     if productRemoved:
         return JSONResponse(
             status_code=200,
