@@ -8,7 +8,7 @@ import base64
 
 #setup logger
 import logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 def get_listing_by_title(title, creator_id):
@@ -98,7 +98,7 @@ def get_all_categories():
     return query_get("SELECT id, name, description FROM categories;", None)
 
 def upload_file(listing_id, file_name: str, storage: str):
-    logger.info(f"crud.upload_file Received request to upload file {file_name} of type {storage} for listing_id: {listing_id}")
+    logger.debug(f"crud.upload_file Received request to upload file {file_name} of type {storage} for listing_id: {listing_id}")
     query_put("""
                     INSERT INTO listing_photos (
                         listing_id,
@@ -114,7 +114,7 @@ def upload_file(listing_id, file_name: str, storage: str):
                   )
 
 def get_listing_images(listing_id):
-    logger.info(f"crud.get_listing_images Received request to get listing images for listing_id: {listing_id}")
+    logger.debug(f"crud.get_listing_images Received request to get listing images for listing_id: {listing_id}")
     photos =  query_get("""
                     SELECT
                         photo_name,
@@ -124,5 +124,21 @@ def get_listing_images(listing_id):
                     """,
                      (listing_id,)
                      )
-    logger.info(f"crud.get_listing_images photos: {photos}")
+    logger.debug(f"crud.get_listing_images photos: {photos}")
     return photos
+
+def get_amount_of_images(listing_id):
+    logger.info(f"crud.get_amount_of_images Received request to get amount of listing images for listing_id: {listing_id}")
+    
+    result = query_get("""
+        SELECT COUNT(*) AS image_count
+        FROM listing_photos
+        WHERE listing_id = %s;
+        """,
+        (listing_id,)
+    )
+    
+    amount = result[0]['image_count'] if result else 0
+    
+    logger.debug(f"crud.get_amount_of_images amount: {amount}")
+    return amount

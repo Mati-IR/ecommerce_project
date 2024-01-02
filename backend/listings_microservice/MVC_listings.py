@@ -110,3 +110,11 @@ def get_categories():
     categories = crud.get_all_categories()
     print(categories)
     return categories
+
+@app.get("/amount_of_images/{listing_id}")
+def get_amount_of_images(listing_id: int):
+    try:
+        return crud.get_amount_of_images(listing_id)
+    except Exception as e:
+        logger.error(f"Error in get_amount_of_images: {e}")
+        raise HTTPException(status_code=500, detail=str(e))

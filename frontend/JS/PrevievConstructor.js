@@ -6,16 +6,16 @@ const userIdIndex = 0;
   // Funkcja do generowania struktury HTML na podstawie danych z pliku JSON
   async function generateHTMLFromJSON(listings, likedListings = []) {
     const parentContainer = document.getElementById('parentContainer');
-    
+    const imageIndex = 0; //by default first image is displayed
     await Promise.all(listings.map(async item => {
       const div = document.createElement('div');
       div.classList.add('parent');
       const dateOnlyString = item.creation_date.substring(0, 10);
       const isLiked = likedListings.find(likedItem => likedItem.listing_id === item.id);
       let imgUrl = null;
-  
+      // fetch @app.get("/listings/{listing_id}/{img_idx}/image")
       try {
-        const response = await fetch(ApiGateway + 'listings/' + item.id + '/images');
+        const response = await fetch(ApiGateway + 'listings/' + item.id + '/' + imageIndex + '/image');
         const blob = await response.blob();
       
         if (blob.size > 0) {

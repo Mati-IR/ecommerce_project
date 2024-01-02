@@ -18,7 +18,7 @@ from fastapi.security import OAuth2AuthorizationCodeBearer
 
 #setup logger
 import logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 FILE_MANAGER_KEY = os.environ.get("FILE_MANAGER_KEY")
@@ -186,14 +186,14 @@ async def create_upload_file(file: UploadFile, listing_id: int):
         # wait for response
         response.raise_for_status()
         # print contents of response
-        logger.info(f'response from listings microservice: {response.json()}')
+        logger.debug(f'response from listings microservice: {response.json()}')
     except httpx.RequestError as exc:
         raise HTTPException(status_code=500, detail=f"Error communicating with listings: {exc}, details: {exc.__dict__}")
     
     return response.json()
 
-@app.get("/listings/{listing_id}/images")
-async def get_listing_images(request: Request, listing_id: int):
+@app.get("/listings/{listing_id}/{img_idx}/image")
+async def get_listing_image(request: Request, listing_id: int, img_idx: int):
     # get file_name and storage type from listings microservice
     try:
         async with httpx.AsyncClient() as client:
@@ -221,13 +221,13 @@ async def get_listing_images(request: Request, listing_id: int):
         async with httpx.AsyncClient() as client:
             file_manager_response = await client.get(
             microservices["file_manager"] + f"/image",
-            params={'image': file_data[0]['photo_name'], 'image_type': 'original'},
+            params={'image': file_data[img_idx]['photo_name'], 'image_type': 'original'},
             headers={'Authorization': f'Bearer {FILE_MANAGER_KEY}'},
         )
         # Check if the response is successful
         file_manager_response.raise_for_status()
-        logger.info(f'file_manager_response: {file_manager_response}')
-        logger.info(f'file_manager_response content: {file_manager_response.content}')
+        # logger.info(f'file_manager_response: {file_manager_response}')
+        # logger.info(f'file_manager_response content: {file_manager_response.content}')
 
         # Return the file
         return StreamingResponse(io.BytesIO(file_manager_response.content), media_type="image/png")
@@ -238,6 +238,27 @@ async def get_listing_images(request: Request, listing_id: int):
         logger.error(f'Error handling file path: {exc}')
         raise HTTPException(status_code=500, detail=f"Error handling file path: {exc}")
 
+@app.get("/amount_of_images/{listing_id}")
+async def get_amount_of_images(request: Request, listing_id: int):
+    # get file_name and storage type from listings microservice
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+            microservices["listings"] + f"/amount_of_images/{listing_id}",
+        )
+
+        # wait for response
+        response.raise_for_status()
+        # print contents of response
+        logger.debug(f'response from listings microservice: {response.json()}')
+    except httpx.RequestError as exc:
+        raise HTTPException(status_code=500, detail=f"Error communicating with listings: {exc}, details: {exc.__dict__}")
+    
+    if len(response.json()) == 0:
+        raise HTTPException(status_code=404, detail=f"Photos for listing with ID {listing_id} not found")
+    
+    file_data = response.json()
+    return len(file_data)
 
 @app.get("/categories")
 async def get_categories():
