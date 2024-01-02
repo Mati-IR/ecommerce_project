@@ -16,7 +16,8 @@ CREATE TABLE IF NOT EXISTS `listings` (
 CREATE TABLE IF NOT EXISTS `listing_photos` (
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `listing_id` INT NOT NULL,
-  `photo_url` VARCHAR(255) NOT NULL,
+  `photo_name` VARCHAR(50) NOT NULL,
+  `storage` VARCHAR(20) NOT NULL,
   FOREIGN KEY (`listing_id`) REFERENCES `listings`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -46,6 +47,8 @@ CREATE TABLE IF NOT EXISTS `basket` (
   `user_id` INT NOT NULL,
   `listing_id` INT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
 
 
 ALTER TABLE `listings` ADD CONSTRAINT `listings_category_fk0` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`);

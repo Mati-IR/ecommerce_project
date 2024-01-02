@@ -15,65 +15,111 @@ function getCategoryID(categoryID) {
 }
 
 function getListingByID(listingID) {
-    fetch("http://127.0.0.1:listings/" + listingID)
+    fetch("http://127.0.0.1:8000/" + listingID)
         .then(response => response.json())
         .then(data => {
             return data;
         });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
 
-    // handle new listing creation
-    document.getElementById("newOfferForm").addEventListener("submit", function(event) {
-        event.preventDefault(); // prevent the form from submitting the traditional way
-        const storedUserData = JSON.parse(localStorage.getItem("user"));
-        let userId  = storedUserData.id;
-
-        // get the form data
-        const newListingData = {
-            /* Get creator_id from local storage */
-            creator_id: userId,
-            title: document.getElementById("title").value,
-            description: document.getElementById("description").value,
-            price: document.getElementById("price").value,
-            location: document.getElementById("address").value,
-            category_id: getCategoryID(categories.find(cat => cat.name === document.getElementById("category").value).id)
-        };
-        // if null in any of the fields, alert user and end this event listener
-        if (Object.values(newListingData).includes(null)) {
-            alert("Please fill in all fields!");
-            console.error("Null value in fields: " + Object.keys(newListingData).find(key => newListingData[key] === null));
-            return;
-        }
-
-        // send the newListingData to the API gateway
-        fetch("http://127.0.0.1:8000/create_listing", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(newListingData)
-        })
-            .then(response => {
-                console.log(JSON.stringify(newListingData))
-                if (!response.ok) {
-                    throw new Error(`Network response was not ok: ${response.statusText}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                // handle successful listing creation
-                // assuming 'data' contains a token or user identifier
-                // window.location.href = "index.html"; // redirect to index.html
-                alert("Listing created successfully!")
-            })
-            .catch(error => {
-                // handle errors
-                console.error("Error:", error);
-                alert("Error creating listing!\n " + error);
+async function uploadImages(images, listing_id) {
+    // check if images are files
+    if (!images[0] instanceof File) {
+        console.error("Images are not files!");
+        return;
+    }
+    console.log("Uploading image: " + images[0].name + " to listing: " + listing_id);
+    for (let i = 0; i < images.length; i++) {
+        let bodyFormData = new FormData();
+        bodyFormData.append('file', images[i]);
+        console.log("Uploading image: " + images[i].name + " to listing: " + listing_id);
+        try {
+            const response = await fetch("http://127.0.0.1:8000/uploadfile/" + listing_id, {
+                method: "POST",
+                body: bodyFormData
             });
-    }   
-    );
-});
 
+
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Error uploading images!\n " + error);
+        }
+    }
+}
+
+async function getListingPhotos(listing_id) {
+    try {
+        const response = await fetch("http://127.0.0.1:8000/listings/" + listing_id + "/images", {
+            method: "GET"
+        });
+        const data = await response.json();
+        console.log(data);
+        return data;
+    }
+    catch (error) {
+        console.error("Error:", error);
+        alert("Error getting listing photos!\n " + error);
+    }
+}
+
+function submitForm() {
+    event.preventDefault();
+
+    event.preventDefault(); // prevent the form from submitting the traditional way
+    const storedUserData = JSON.parse(localStorage.getItem("user"));
+    let userId  = storedUserData.id;
+
+    // get the form data
+    const newListingData = {
+        /* Get creator_id from local storage */
+        creator_id: userId,
+        title: document.getElementById("title").value,
+        description: document.getElementById("description").value,
+        price: parseFloat(document.getElementById("price").value),
+        location: document.getElementById("address").value,
+        category_id: getCategoryID(categories.find(cat => cat.name === document.getElementById("category").value).id)
+    };
+    // if null in any of the fields, alert user and end this event listener
+    if (Object.values(newListingData).includes(null)) {
+        alert("Please fill in all fields!");
+        console.error("Null value in fields: " + Object.keys(newListingData).find(key => newListingData[key] === null));
+        return;
+    }
+
+    // send the newListingData to the API gateway
+    fetch("http://127.0.0.1:8000/create_listing", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(newListingData)
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            /* return {
+                "status": "success",
+                "message": "Listing created successfully!",
+                "listing": listing_id
+            } */
+            const listingId = data.listing;
+            console.log("listingId = " + listingId);
+
+            let listOfImages = [];
+            const imagesInput = document.getElementById('images');
+            for (let i = 0; i < imagesInput.files.length; i++) {
+                listOfImages.push(imagesInput.files[i]);
+            }
+
+            //console.log(response);
+
+            uploadImages(listOfImages, listingId);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert("Error creating listing!\n " + error);
+        });
+
+
+}

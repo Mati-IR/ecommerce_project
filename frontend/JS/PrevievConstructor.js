@@ -4,18 +4,33 @@ const ApiGateway = 'http://127.0.0.1:8000/';
 const userIdIndex = 0;
 
   // Funkcja do generowania struktury HTML na podstawie danych z pliku JSON
-  function generateHTMLFromJSON(listings, likedListings = []) {
+  async function generateHTMLFromJSON(listings, likedListings = []) {
     const parentContainer = document.getElementById('parentContainer');
     
-    listings.forEach(item => {
+    await Promise.all(listings.map(async item => {
       const div = document.createElement('div');
       div.classList.add('parent');
       const dateOnlyString = item.creation_date.substring(0, 10);
       const isLiked = likedListings.find(likedItem => likedItem.listing_id === item.id);
-      console.log("likedListings in generateHTMLFromJSON: " + likedListings);
-        
+      let imgUrl = null;
+  
+      try {
+        const response = await fetch(ApiGateway + 'listings/' + item.id + '/images');
+        const blob = await response.blob();
+      
+        if (blob.size > 0) {
+          imgUrl = URL.createObjectURL(blob);
+        } else {
+          console.error('No images found for listing:', item.id);
+        }
+      } catch (error) {
+        console.error('Error fetching images:', error);
+      }
+    
+      console.log("imgUrl: " + imgUrl);
+  
       div.innerHTML = `
-        <div class="photo"> <img src="${item.photoSrc}" alt="Zdjęcie ogłoszenia"></div>
+        <div class="photo"> <img src="${imgUrl}" alt="Zdjęcie ogłoszenia"></div>
         <div class="title">${item.title}</div>
         <div class="price-pre">${item.price} zł</div>
         <div class="loc">${item.location}</div>
@@ -31,7 +46,7 @@ const userIdIndex = 0;
         `;
       }
       parentContainer.appendChild(div);
-    });
+    }));
   }
 
   function getLikedListingIds(listings) {
