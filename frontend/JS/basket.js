@@ -11,9 +11,9 @@ async function getBasket() {
     }
 }
 
-async function addProduct() {
-    const userId = document.getElementById('addUserId').value;
-    const listingId = document.getElementById('listingId').value;
+async function addProduct(event) {
+    const userId = JSON.parse(localStorage.getItem('user')).id;
+    const listingId = event.target.parentElement.parentElement.querySelector('.listing-id').textContent;
     try {
         const response = await fetch(`${apiBaseUrl}/basket/add_product/${listingId}/${userId}`, {
             method: 'POST',
@@ -22,8 +22,30 @@ async function addProduct() {
             }
         });
         const data = await response.json();
-        document.getElementById('addProductResponse').textContent = JSON.stringify(data, null, 2);
+        // change icon and onclick function
+        event.target.classList.remove('bi-heart');
+        event.target.classList.add('bi-heart-fill');
+        event.target.parentElement.setAttribute('onclick', 'removeProduct(event)');
+
     } catch (error) {
         console.error('Error adding product:', error);
     }
+}
+
+function removeProduct(event) {
+    const userId = JSON.parse(localStorage.getItem('user')).id;
+    const listingId = event.target.parentElement.parentElement.querySelector('.listing-id').textContent;
+    fetch(`${apiBaseUrl}/basket/remove_product/${listingId}/${userId}`, {
+        method: 'DELETE'
+    })
+        .then(response => response.json())
+        .then(data => {
+            // change icon and onclick function
+            event.target.classList.remove('bi-heart-fill');
+            event.target.classList.add('bi-heart');
+            event.target.parentElement.setAttribute('onclick', 'addProduct(event)');
+        })
+        .catch(error => {
+            console.error('Error removing product:', error);
+        });
 }

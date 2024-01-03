@@ -12,6 +12,7 @@ const userIdIndex = 0;
       div.classList.add('parent');
       const dateOnlyString = item.creation_date.substring(0, 10);
       const isLiked = likedListings.find(likedItem => likedItem.listing_id === item.id);
+      const listingId = item.id;
       let imgUrl = null;
       // fetch @app.get("/listings/{listing_id}/{img_idx}/image")
       try {
@@ -35,21 +36,29 @@ const userIdIndex = 0;
         <div class="price-pre">${item.price} zł</div>
         <div class="loc">${item.location}</div>
         <div class="date">${dateOnlyString}</div>
-      `;
+        <div class="listing-id">${listingId}</div>
+      `; 
+
       if (isLiked) {
         div.innerHTML += `
-          <div class="fav"><i class="bi bi-heart-fill fs-3 icon-decoration-preview"></i></div>
+          <div class="fav" onclick="removeProduct(event)">
+            <i class="bi bi-heart-fill fs-3 icon-decoration-preview"></i>
+          </div>
         `;
       } else { /* Not liked */
         div.innerHTML += `
-        <div class="fav"> <i class="bi bi-heart fs-3 icon-decoration-preview"></i> </div>
+          <div class="fav" onclick="addProduct(event)">
+            <i class="bi bi-heart fs-3 icon-decoration-preview"></i>
+          </div>
         `;
       }
       parentContainer.appendChild(div);
     }));
   }
 
-  function getLikedListingIds(listings) {
+
+
+  function generatePreview(listings) {
     let userId = null;
     try {
       /* {id: 1, name: "a", email: "a@gmail.com"} */
@@ -83,6 +92,6 @@ fetch(ApiGateway + 'listingsByCategory/1/10')
     .then(data => {
         dataFromJSON = data;
         console.log(dataFromJSON);
-        getLikedListingIds(dataFromJSON);  // Call the function here
+        generatePreview(dataFromJSON);  // Call the function here
     })
     .catch(error => console.error(error));
