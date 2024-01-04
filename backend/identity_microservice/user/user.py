@@ -111,6 +111,12 @@ def get_user_by_id(id: int):
             users.id,
             users.name,
             users.email,
+            users.phone,
+            users.city,
+            users.postal_code,
+            users.street,
+            users.street_number,
+            users.website
         FROM users 
         WHERE id = %s
         """, (id))

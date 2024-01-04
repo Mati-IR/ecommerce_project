@@ -48,21 +48,6 @@ async function uploadImages(images, listing_id) {
     }
 }
 
-async function getListingPhotos(listing_id) {
-    try {
-        const response = await fetch("http://127.0.0.1:8000/listings/" + listing_id + "/images", {
-            method: "GET"
-        });
-        const data = await response.json();
-        console.log(data);
-        return data;
-    }
-    catch (error) {
-        console.error("Error:", error);
-        alert("Error getting listing photos!\n " + error);
-    }
-}
-
 function submitForm() {
     event.preventDefault();
 

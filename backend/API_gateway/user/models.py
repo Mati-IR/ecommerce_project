@@ -22,8 +22,7 @@ class UserUpdateRequestModel(BaseModel):
 class UserResponseModel(BaseModel):
     id: int
     email: EmailStr
-    first_name: str
-    last_name: str
+    name: str
 
 
 class TokenModel(BaseModel):

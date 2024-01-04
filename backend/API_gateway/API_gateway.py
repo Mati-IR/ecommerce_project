@@ -18,7 +18,7 @@ from fastapi.security import OAuth2AuthorizationCodeBearer
 
 #setup logger
 import logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 FILE_MANAGER_KEY = os.environ.get("FILE_MANAGER_KEY")
@@ -72,7 +72,7 @@ async def login(request: Request, user_details: SignInRequestModel):
     async with httpx.AsyncClient() as client:
         # get user from identity microservice by provided login and password
         response = await client.post(
-            microservices["identity"] + "/v1/signin",
+            microservices["identity"] + "/signin",
             json=user_details.dict()
         )
 
@@ -98,7 +98,7 @@ async def register(request: Request, user_details: SignUpRequestModel):
         async with httpx.AsyncClient() as client:
             # get user from identity microservice by provided login and password
             response = await client.post(
-                microservices["identity"] + "/v1/signup",
+                microservices["identity"] + "/signup",
                 json=user_details.dict()
             )
 
@@ -118,7 +118,16 @@ async def register(request: Request, user_details: SignUpRequestModel):
                 details = response.json()
                 raise HTTPException(status_code=response.status_code, detail=details)
 
-from fastapi import File, UploadFile
+@app.get("/get_user/{user_id}")
+async def get_user(request: Request, user_id: int):
+    # call identity microservice
+    async with httpx.AsyncClient() as client:
+        # get user from identity microservice by provided login and password
+        response = await client.get(
+            microservices["identity"] + f"/user/{user_id}",
+        )
+        return response.json()
+
 
 @app.post("/create_listing")
 async def create_listing(request: Request, listing_details: ListingCreateRequestModel):
@@ -254,11 +263,11 @@ async def get_amount_of_images(request: Request, listing_id: int):
     except httpx.RequestError as exc:
         raise HTTPException(status_code=500, detail=f"Error communicating with listings: {exc}, details: {exc.__dict__}")
     
-    if len(response.json()) == 0:
-        raise HTTPException(status_code=404, detail=f"Photos for listing with ID {listing_id} not found")
+    #if len(response.json()) == 0:
+    #    raise HTTPException(status_code=404, detail=f"Photos for listing with ID {listing_id} not found")
     
     file_data = response.json()
-    return len(file_data)
+    return response.json()
 
 @app.get("/categories")
 async def get_categories():

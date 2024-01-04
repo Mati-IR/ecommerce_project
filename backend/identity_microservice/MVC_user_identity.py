@@ -32,7 +32,7 @@ auth_handler = Auth()
 ########## Auth APIs ##########
 ###############################
 
-@app.post('/v1/signup', response_model=UserAuthResponseModel)
+@app.post('/signup', response_model=UserAuthResponseModel)
 def signup_api(user_details: SignUpRequestModel):
     """
     This sign-up API allow you to register your account, and return access token.
@@ -43,7 +43,7 @@ def signup_api(user_details: SignUpRequestModel):
     return JSONResponse(status_code=200, content={'token': {'access_token': access_token, 'refresh_token': refresh_token}, 'user': user})
 
 
-@app.post('/v1/signin', response_model=UserAuthResponseModel)
+@app.post('/signin', response_model=UserAuthResponseModel)
 def signin_api(user_details: SignInRequestModel):
     """
     This sign-in API allow you to obtain your access token.
@@ -79,16 +79,16 @@ def get_all_users_api(credentials: HTTPAuthorizationCredentials = Security(secur
     return JSONResponse(status_code=401, content={'error': 'Failed to authorize'})
 
 
-@app.get("/v1/user/{user_id}", response_model=UserResponseModel)
-def get_user_api(user_id: int, credentials: HTTPAuthorizationCredentials = Security(security)):
+@app.get("/user/{user_id}", response_model=UserResponseModel)
+def get_user_api(user_id: int): # , credentials: HTTPAuthorizationCredentials = Security(security)):
     """
     This user API allow you to fetch specific user data.
     """
-    token = credentials.credentials
-    if (auth_handler.decode_token(token)):
-        user = get_user_by_id(user_id)
-        return JSONResponse(status_code=200, content=jsonable_encoder(user))
-    return JSONResponse(status_code=401, content={'error': 'Failed to authorize'})
+    #token = credentials.credentials
+    #if (auth_handler.decode_token(token)):
+    user = get_user_by_id(user_id)
+    return JSONResponse(status_code=200, content=jsonable_encoder(user))
+    #return JSONResponse(status_code=401, content={'error': 'Failed to authorize'})
 
 
 @app.post("/v1/user/update", response_model=UserResponseModel)

@@ -25,14 +25,14 @@ async function addProduct(event) {
         // change icon and onclick function
         event.target.classList.remove('bi-heart');
         event.target.classList.add('bi-heart-fill');
-        event.target.parentElement.setAttribute('onclick', 'removeProduct(event)');
+        event.target.parentElement.setAttribute('onclick', 'removeProductFromFavourites(event)');
 
     } catch (error) {
         console.error('Error adding product:', error);
     }
 }
 
-function removeProduct(event) {
+function removeProductFromFavourites(event) {
     const userId = JSON.parse(localStorage.getItem('user')).id;
     const listingId = event.target.parentElement.parentElement.querySelector('.listing-id').textContent;
     fetch(`${apiBaseUrl}/basket/remove_product/${listingId}/${userId}`, {

@@ -3,6 +3,15 @@
 const ApiGateway = 'http://127.0.0.1:8000/';
 const userIdIndex = 0;
 
+  function generateFullPreview(event) {
+    console.log('generateFullPreview');
+    const listingId = event.target.parentElement.parentElement.querySelector('.listing-id').textContent;
+    // Construct the URL with parameters
+    const urlWithParams = `../offer_template.html?listingId=${listingId}`;
+
+    // Change location to the new URL
+    window.location.href = urlWithParams;
+  }
   // Funkcja do generowania struktury HTML na podstawie danych z pliku JSON
   async function generateHTMLFromJSON(listings, likedListings = []) {
     const parentContainer = document.getElementById('parentContainer');
@@ -38,10 +47,14 @@ const userIdIndex = 0;
         <div class="date">${dateOnlyString}</div>
         <div class="listing-id">${listingId}</div>
       `; 
+      // add generateFullPreview function to onclick event and change mouse on hover
+      div.setAttribute('onclick', 'generateFullPreview(event)');
+      div.setAttribute('onmouseover', 'this.style.cursor = "pointer"');
 
+      
       if (isLiked) {
         div.innerHTML += `
-          <div class="fav" onclick="removeProduct(event)">
+          <div class="fav" onclick="removeProductFromFavourites(event)">
             <i class="bi bi-heart-fill fs-3 icon-decoration-preview"></i>
           </div>
         `;
