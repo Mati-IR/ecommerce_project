@@ -1,5 +1,5 @@
 const ApiGateway = 'http://127.0.0.1:8000'; // Replace with your actual API base URL
-const ApiKey = 'empty :)'
+const ApiKey = 'AIzaSyB3aHCKN6yxeqkCxY0PjOLH2rpx8LsnQ-8'
 
 function generateFullPreview() {
         // Get the current URL
@@ -75,34 +75,97 @@ function generateFullPreview() {
                     // Populate the data in the HTML elements
                     console.log('Amount of images:', data);
                     amountOfImages = data;
-                    // clear carousel and make new one based on amount of images
-                    const carousel = document.getElementById('container-mt5');
-                    carousel.innerHTML = '';
-                    for(let i = 0; i < amountOfImages; i++) {
-                        carousel.innerHTML += `
-                            <div class="carousel-item">
-                                <img id="image${i}" class="d-block w-100" src="" alt="slide">
-                            </div>
-                        `;
+                    const carouselInner = document.getElementById('carouselExampleIndicators');
+                    carouselInner.innerHTML = '';
+
+                    if(amountOfImages !== 0) {
+                        // Initialize the carousel
+                        carouselInner.innerHTML = `
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>`;
+                        // const response = await fetch(ApiGateway + 'listings/' + item.id + '/' + imageIndex + '/image');
+                        for (let i = 0; i < amountOfImages; i++) {
+                            fetch(ApiGateway + '/listings/' + listingId + '/' + i + '/image')
+                                .then(response => response.blob())
+                                .then(blob => {
+                                    if (blob.size > 0) {
+                                        const imgUrl = URL.createObjectURL(blob);
+                                        console.log('Image URL:', imgUrl);
+
+                                        // append carousel
+                                        carouselInner.innerHTML += `
+                                        <div class="carousel-item active">
+                                            <img src="${imgUrl}" class="d-block w-100" alt="photo ${i}" data-bs-toggle="modal" data-bs-target="#imageModal">
+                                        </div>
+                                        `;
+                                        if(i !== 0) {
+                                            carouselInner.innerHTML += `
+                                            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="${i}" aria-label="Slide ${i}"></button>
+                                            `;
+                                        }
+                                        else {
+                                            carouselInner.innerHTML += `
+                                            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="${i}" class="active" aria-current="true" aria-label="Slide ${i}"></button>
+                                            `;
+                                        }
+                                        
+                                    } else {
+                                        console.error('No images found for listing:', listingId);
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error fetching images:', error);
+                                });
+                        }
                     }
 
-                    // const response = await fetch(ApiGateway + 'listings/' + item.id + '/' + imageIndex + '/image');
-                    for(let i = 0; i < amountOfImages; i++) {
-                        fetch(ApiGateway + '/listings/' + listingId + '/' + i + '/image')
-                            .then(response => response.blob())
-                            .then(blob => {
-                                if (blob.size > 0) {
-                                    const imgUrl = URL.createObjectURL(blob);
-                                    console.log('Image URL:', imgUrl);
-                                    document.getElementById('image' + i).src = imgUrl;
-                                } else {
-                                    console.error('No images found for listing:', listingId);
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error fetching images:', error);
-                            });
-                    }
+                    console.log('Images URL:', imagesUrl);
+                    /* // Populate the carousel with new images
+                    /*imageUrls.forEach((imageUrl, index) => {
+                        const carouselItem = document.createElement('div');
+                        carouselItem.classList.add('carousel-item');
+
+                        if (index === 0) {
+                            carouselItem.classList.add('active');
+                        }
+
+                        const imgElement = document.createElement('img');
+                        imgElement.src = imageUrl;
+                        imgElement.classList.add('d-block', 'w-100');
+                        imgElement.alt = `Image ${index + 1}`;
+                        imgElement.setAttribute('data-bs-toggle', 'modal');
+                        imgElement.setAttribute('data-bs-target', '#imageModal');
+
+                        carouselItem.appendChild(imgElement);
+                        carouselInner.appendChild(carouselItem);
+                    }); */
+
+                    // Based on the above code, we can create a carousel with images
+                    imagesUrl.forEach((imageUrl, index) => {
+                        const carouselItem = document.createElement('div');
+                        carouselItem.classList.add('carousel-item');
+
+                        if (index === 0) {
+                            carouselItem.classList.add('active');
+                        }
+
+                        const imgElement = document.createElement('img');
+                        imgElement.src = imageUrl;
+                        imgElement.classList.add('d-block', 'w-100');
+                        imgElement.alt = `Image ${index + 1}`;
+                        imgElement.setAttribute('data-bs-toggle', 'modal');
+                        imgElement.setAttribute('data-bs-target', '#imageModal');
+
+                        carouselItem.appendChild(imgElement);
+                        carouselInner.appendChild(carouselItem);
+                    });
+
                 })
                 .catch(error => {
                     console.error('Error fetching images:', error);
