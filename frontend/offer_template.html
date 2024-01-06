@@ -9,35 +9,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="CSS/style.css">
-    <style>
-      #myCarousel {
-  height: auto;
-  width: auto;
-  overflow: hidden;
-}
-      /* Dodatkowe style CSS mogą być dodane tutaj */
-      .modal-body {
-        text-align: center;
-      }
-      #enlargedImg {
-        max-width: 100%;
-        max-height: 80vh; /* Maksymalna wysokość zdjęcia w modalu */
-        margin: 0 auto; /* Centralizacja zdjęcia */
-        display: block; /* Ustawienie zdjęcia jako blokowego elementu */
-      }
-        /* Dodatkowe style mogą być dodane tutaj */
-  .carousel {
-    width: 100%;
-    max-width: 800px; /* Maksymalna szerokość karuzeli */
-    margin: 0 auto;
-  }
-  .carousel-item img {
-    width: 100%;
-    height: auto;
-    max-height: 400px; /* Maksymalna wysokość zdjęć w karuzeli */
-    object-fit: cover; /* Zachowanie proporcji obrazów */
-  }
-    </style>
   </head>
   <body>
     <div class="nav-color-main">
@@ -51,34 +22,18 @@
           <div class="offer">
             <h2 class="text-center mb-4" id="title">Tytuł ogłoszenia z db</h2>
             <p id="creation_date" class="text-center"><small>data utworzenia</small></p>
-            <div class="container mt-5">
-              <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-indicators">
-                  <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-                  <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                  <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
-                </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                  <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                  <span class="visually-hidden">Next</span>
-                </button>
-                <div class="carousel-inner">
-                  <div class="carousel-item active">
-                    <img src="Resources/Logo.png" class="d-block w-100" alt="Image 1" data-bs-toggle="modal" data-bs-target="#imageModal">
-                  </div>
-                  <div class="carousel-item">
-                    <img src="Resources/mudzyn.jpg" class="d-block w-100" alt="Image 2" data-bs-toggle="modal" data-bs-target="#imageModal">
-                  </div>
-                  <div class="carousel-item">
-                    <img src="Resources/background.jpg" class="d-block w-100" alt="Image 3" data-bs-toggle="modal" data-bs-target="#imageModal">
-                  </div>
+
+            <!--GALLERY-->
+            <div class="carousel-container">
+              <div class="carousel-slide">
+                <img src="url_do_zdjecia_1.jpg" alt="Carousel Slide" class="carousel-image">
+                <div class="carousel-navigation">
+                  <button id="prevBtn">&lt;</button>
+                  <button id="nextBtn">&gt;</button>
                 </div>
               </div>
             </div>
+            <div class="carousel-indicators-prime"></div>
     
             <div class="row">
               <div class="col-md-6">
@@ -125,19 +80,17 @@
       </div>
     </div>
 
-
-
-
-    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <button type="button" class="btn-close float-right" data-bs-dismiss="modal" aria-label="Close"></button>
-              <div class="modal-body">
-                <img src="" class="img-fluid" id="enlargedImg" alt="Powiększone zdjęcie">
-          </div>
-        </div>
+    <!--FULLSCREEN GALLERY-->
+    <div class="fullscreen-container">
+      <span class="fullscreen-close">&times;</span>
+      <div class="fullscreen-navigation">
+        <button id="fullscreenPrevBtn">&lt;</button>
+        <img src="" alt="Fullscreen Image" class="fullscreen-image">
+        <button id="fullscreenNextBtn">&gt;</button>
       </div>
+      <div class="fullscreen-indicators"></div>
     </div>
+
     <script>
       // Skrypt dla powiększania zdjęć w karuzeli
       const carouselImages = document.querySelectorAll('.carousel-item img');
