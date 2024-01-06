@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Gallery Carousel</title>
+<style>
+  /* Dodaj tutaj styl CSS */
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+
+  .carousel-container {
+    position: relative;
+    max-width: 800px;
+    margin: auto;
+    overflow: hidden;
+    height: 400px; /* ustalony wymiar dla galerii */
+  }
+  
+  .carousel-slide {
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+  
+  .carousel-image {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    margin: auto;
+    cursor: pointer;
+  }
+  
+  .carousel-navigation {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .carousel-navigation button {
+    font-size: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .carousel-indicators {
+    text-align: center;
+    margin-top: 10px;
+  }
+  
+  .indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background-color: gray;
+    border-radius: 50%;
+    margin: 0 5px;
+    cursor: pointer;
+  }
+  
+  .indicator.active {
+    background-color: white;
+    border: 2px solid black;
+  }
+  
+  /* Styl dla wyświetlania pełnowymiarowego obrazu */
+  .fullscreen-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    overflow: hidden;
+    display: none;
+  }
+  
+  .fullscreen-image {
+    max-width: 90%;
+    max-height: 90%;
+    cursor: pointer;
+    object-fit: contain;
+  }
+  
+  .fullscreen-navigation {
+    position: absolute;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: white;
+  }
+  
+  .fullscreen-navigation button {
+    font-size: 30px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: white;
+  }
+  
+  .fullscreen-indicators {
+    text-align: center;
+    margin-top: 10px;
+    color: white;
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+  }
+  
+  .fullscreen-indicators .indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background-color: gray;
+    border-radius: 50%;
+    margin: 0 5px;
+    cursor: pointer;
+  }
+  
+  .fullscreen-indicators .indicator.active {
+    background-color: white;
+    border: 2px solid black;
+  }
+  
+  .fullscreen-close {
+    font-size: 24px;
+    cursor: pointer;
+    color: white;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+</style>
+</head>
+<body>
+
+<div class="carousel-container">
+  <div class="carousel-slide">
+    <img src="url_do_zdjecia_1.jpg" alt="Carousel Slide" class="carousel-image">
+    <div class="carousel-navigation">
+      <button id="prevBtn">&lt;</button>
+      <button id="nextBtn">&gt;</button>
+    </div>
+  </div>
+</div>
+
+<div class="carousel-indicators"></div>
+
+<div class="fullscreen-container">
+  <span class="fullscreen-close">&times;</span>
+  <div class="fullscreen-navigation">
+    <button id="fullscreenPrevBtn">&lt;</button>
+    <img src="" alt="Fullscreen Image" class="fullscreen-image">
+    <button id="fullscreenNextBtn">&gt;</button>
+  </div>
+  <div class="fullscreen-indicators"></div>
+</div>
+
+<script>
+// Zdjęcia do karuzeli
+const images = [
+'https://ireland.apollo.olxcdn.com/v1/files/9o410yf34ss5-PL/image;s=1000x700',
+    'https://ireland.apollo.olxcdn.com/v1/files/xzx0jmf55jg02-PL/image;s=1000x700',
+    'https://ireland.apollo.olxcdn.com/v1/files/aiydu6qy4m713-PL/image;s=1000x700',
+    'https://ireland.apollo.olxcdn.com/v1/files/wh9s8hxzx19t2-PL/image;s=1000x700',
+    'https://ireland.apollo.olxcdn.com/v1/files/cca99u7a4m9r-PL/image;s=1000x700',
+    'https://ireland.apollo.olxcdn.com/v1/files/rmw4sy5ytcr01-PL/image;s=1000x700'
+  // Dodaj kolejne adresy URL obrazów według potrzeb
+  ];
+
+const carouselContainer = document.querySelector('.carousel-container');
+const slide = document.querySelector('.carousel-slide');
+const image = document.querySelector('.carousel-image');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const carouselIndicators = document.querySelector('.carousel-indicators');
+
+const fullscreenContainer = document.querySelector('.fullscreen-container');
+const fullscreenImage = document.querySelector('.fullscreen-image');
+const fullscreenPrevBtn = document.getElementById('fullscreenPrevBtn');
+const fullscreenNextBtn = document.getElementById('fullscreenNextBtn');
+const fullscreenIndicators = document.querySelector('.fullscreen-indicators');
+const fullscreenClose = document.querySelector('.fullscreen-close');
+
+let currentSlide = 0;
+let fullscreenCurrentSlide = 0; // Dodatkowa zmienna dla trybu pełnoekranowego
+
+// Tworzenie indykatorów dla każdego zdjęcia
+function createIndicators() {
+  for (let i = 0; i < images.length; i++) {
+    const indicator = document.createElement('span');
+    indicator.classList.add('indicator');
+    carouselIndicators.appendChild(indicator);
+
+    // Ustawienie event listenera na kliknięcie indykatora w karuzeli
+    indicator.addEventListener('click', () => {
+      currentSlide = i;
+      fullscreenCurrentSlide = i; // Uaktualnienie zmiennej w trybie pełnoekranowym
+      changeSlide();
+      changeFullscreenSlide(); // Synchronizacja stanu indykatorów w trybie pełnoekranowym
+    });
+  }
+}
+
+function createFullscreenIndicators() {
+  for (let i = 0; i < images.length; i++) {
+    const indicator = document.createElement('span');
+    indicator.classList.add('indicator');
+    fullscreenIndicators.appendChild(indicator);
+
+    // Ustawienie event listenera na kliknięcie indykatora w trybie pełnoekranowym
+    indicator.addEventListener('click', () => {
+      fullscreenCurrentSlide = i;
+      changeFullscreenSlide();
+      changeSlide(); // Synchronizacja stanu indykatorów w karuzeli
+    });
+  }
+}
+
+// Zmiana slajdu na podstawie bieżącego indeksu
+function changeSlide() {
+  image.src = images[currentSlide];
+  const indicators = document.querySelectorAll('.indicator');
+  indicators.forEach((indicator, index) => {
+    if (index === currentSlide) {
+      indicator.classList.add('active');
+    } else {
+      indicator.classList.remove('active');
+    }
+  });
+}
+
+// Zmiana slajdu w trybie pełnoekranowym na podstawie bieżącego indeksu
+function changeFullscreenSlide() {
+  fullscreenImage.src = images[fullscreenCurrentSlide];
+  const fullscreenIndicators = document.querySelectorAll('.fullscreen-indicators .indicator');
+  fullscreenIndicators.forEach((indicator, index) => {
+    if (index === fullscreenCurrentSlide) {
+      indicator.classList.add('active');
+    } else {
+      indicator.classList.remove('active');
+    }
+  });
+}
+
+// Obsługa kliknięć na przyciski nawigacyjne w karuzeli
+prevBtn.addEventListener('click', () => {
+  currentSlide = (currentSlide - 1 + images.length) % images.length;
+  fullscreenCurrentSlide = currentSlide; // Uaktualnienie zmiennej w trybie pełnoekranowym
+  changeSlide();
+});
+
+nextBtn.addEventListener('click', () => {
+  currentSlide = (currentSlide + 1) % images.length;
+  fullscreenCurrentSlide = currentSlide; // Uaktualnienie zmiennej w trybie pełnoekranowym
+  changeSlide();
+});
+
+// Obsługa kliknięć na obrazie w celu wyświetlenia pełnego obrazu
+image.addEventListener('click', () => {
+  fullscreenCurrentSlide = currentSlide;
+  fullscreenImage.src = images[currentSlide];
+  fullscreenContainer.style.display = 'flex';
+  fullscreenIndicators.innerHTML = ''; // Wyczyszczenie indykatorów przy otwarciu trybu pełnoekranowego
+  createFullscreenIndicators();
+  changeFullscreenSlide();
+});
+
+// Obsługa kliknięć na przyciski nawigacyjne w trybie pełnoekranowym
+fullscreenPrevBtn.addEventListener('click', () => {
+  fullscreenCurrentSlide = (fullscreenCurrentSlide - 1 + images.length) % images.length;
+  changeFullscreenSlide();
+});
+
+fullscreenNextBtn.addEventListener('click', () => {
+  fullscreenCurrentSlide = (fullscreenCurrentSlide + 1) % images.length;
+  changeFullscreenSlide();
+});
+
+// Obsługa kliknięć na pełnym obrazie w celu zamknięcia widoku pełnoekranowego
+fullscreenClose.addEventListener('click', () => {
+  fullscreenContainer.style.display = 'none';
+});
+
+// Inicjalizacja karuzeli
+createIndicators();
+changeSlide();
+</script>
+
+</body>
+</html>
