@@ -1,5 +1,5 @@
 const ApiGateway = 'http://127.0.0.1:8000'; // Replace with your actual API base URL
-const ApiKey = 'empty :)'
+const ApiKey = 'AIzaSyB3aHCKN6yxeqkCxY0PjOLH2rpx8LsnQ-8'
 
 function generateFullPreview() {
         // Get the current URL
@@ -75,26 +75,20 @@ function generateFullPreview() {
                     // Populate the data in the HTML elements
                     console.log('Amount of images:', data);
                     amountOfImages = data;
-                    // clear carousel and make new one based on amount of images
-                    const carousel = document.getElementById('container-mt5');
-                    carousel.innerHTML = '';
-                    for(let i = 0; i < amountOfImages; i++) {
-                        carousel.innerHTML += `
-                            <div class="carousel-item">
-                                <img id="image${i}" class="d-block w-100" src="" alt="slide">
-                            </div>
-                        `;
-                    }
 
-                    // const response = await fetch(ApiGateway + 'listings/' + item.id + '/' + imageIndex + '/image');
-                    for(let i = 0; i < amountOfImages; i++) {
-                        fetch(ApiGateway + '/listings/' + listingId + '/' + i + '/image')
+                    if(amountOfImages !== 0) {let imageUrls = []; // Array to store image URLs
+                    let fetchPromises = []; // Array to store fetch promises
+                    
+                    for (let i = 0; i < amountOfImages; i++) {
+                        const fetchPromise = fetch(ApiGateway + '/listings/' + listingId + '/' + i + '/image')
                             .then(response => response.blob())
                             .then(blob => {
                                 if (blob.size > 0) {
                                     const imgUrl = URL.createObjectURL(blob);
                                     console.log('Image URL:', imgUrl);
-                                    document.getElementById('image' + i).src = imgUrl;
+                    
+                                    // Storing the image URL in the array
+                                    imageUrls.push(imgUrl);
                                 } else {
                                     console.error('No images found for listing:', listingId);
                                 }
@@ -102,6 +96,15 @@ function generateFullPreview() {
                             .catch(error => {
                                 console.error('Error fetching images:', error);
                             });
+                    
+                        fetchPromises.push(fetchPromise);
+                    }
+                    
+                    // Wait for all fetch requests to complete
+                    Promise.all(fetchPromises)
+                        .then(() => {
+                            createGallery(imageUrls); // Call createGallery function with imageUrls after all fetch requests are done
+                        });
                     }
                 })
                 .catch(error => {
@@ -131,3 +134,108 @@ function generateFullPreview() {
 }
 
 generateFullPreview();
+
+function createGallery(images) {
+    const carouselContainer = document.querySelector('.carousel-container');
+    const image = document.querySelector('.carousel-image');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const carouselIndicators = document.querySelector('.carousel-indicators-prime');
+  
+    const fullscreenContainer = document.querySelector('.fullscreen-container');
+    const fullscreenImage = document.querySelector('.fullscreen-image');
+    const fullscreenPrevBtn = document.getElementById('fullscreenPrevBtn');
+    const fullscreenNextBtn = document.getElementById('fullscreenNextBtn');
+    const fullscreenIndicators = document.querySelector('.fullscreen-indicators');
+    const fullscreenClose = document.querySelector('.fullscreen-close');
+  
+    let currentSlide = 0;
+    let fullscreenCurrentSlide = 0;
+  
+    function createIndicators() {
+      for (let i = 0; i < images.length; i++) {
+        const indicator = document.createElement('span');
+        indicator.classList.add('indicator');
+        carouselIndicators.appendChild(indicator);
+  
+        indicator.addEventListener('click', () => {
+          currentSlide = i;
+          changeSlide();
+        });
+      }
+    }
+  
+    function createFullscreenIndicators() {
+      for (let i = 0; i < images.length; i++) {
+        const indicator = document.createElement('span');
+        indicator.classList.add('indicator');
+        fullscreenIndicators.appendChild(indicator);
+  
+        indicator.addEventListener('click', () => {
+          fullscreenCurrentSlide = i;
+          changeFullscreenSlide();
+        });
+      }
+    }
+  
+    function changeSlide() {
+      image.src = images[currentSlide];
+      const indicators = document.querySelectorAll('.indicator');
+      indicators.forEach((indicator, index) => {
+        if (index === currentSlide) {
+          indicator.classList.add('active');
+        } else {
+          indicator.classList.remove('active');
+        }
+      });
+    }
+  
+    function changeFullscreenSlide() {
+      fullscreenImage.src = images[fullscreenCurrentSlide];
+      const fullscreenIndicators = document.querySelectorAll('.fullscreen-indicators .indicator');
+      fullscreenIndicators.forEach((indicator, index) => {
+        if (index === fullscreenCurrentSlide) {
+          indicator.classList.add('active');
+        } else {
+          indicator.classList.remove('active');
+        }
+      });
+    }
+  
+    prevBtn.addEventListener('click', () => {
+      currentSlide = (currentSlide - 1 + images.length) % images.length;
+      changeSlide();
+    });
+  
+    nextBtn.addEventListener('click', () => {
+      currentSlide = (currentSlide + 1) % images.length;
+      changeSlide();
+    });
+  
+    fullscreenPrevBtn.addEventListener('click', () => {
+      fullscreenCurrentSlide = (fullscreenCurrentSlide - 1 + images.length) % images.length;
+      changeFullscreenSlide();
+    });
+  
+    fullscreenNextBtn.addEventListener('click', () => {
+      fullscreenCurrentSlide = (fullscreenCurrentSlide + 1) % images.length;
+      changeFullscreenSlide();
+    });
+  
+    fullscreenClose.addEventListener('click', () => {
+      fullscreenContainer.style.display = 'none';
+    });
+  
+    image.addEventListener('click', () => {
+      fullscreenCurrentSlide = currentSlide;
+      fullscreenImage.src = images[currentSlide];
+      fullscreenContainer.style.display = 'flex';
+      fullscreenIndicators.innerHTML = '';
+      createFullscreenIndicators();
+      changeFullscreenSlide();
+    });
+  
+    createIndicators();
+    changeSlide();
+  }
+  
