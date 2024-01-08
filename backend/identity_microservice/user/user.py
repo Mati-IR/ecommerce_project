@@ -5,6 +5,9 @@ from .models import UserUpdateRequestModel, SignUpRequestModel
 
 auth_handler = Auth()
 
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def register_user(user_model: SignUpRequestModel):
     user = get_user_by_email(user_model.email)
@@ -57,7 +60,8 @@ def signin_user(email, password):
 
 
 def update_user(user_model: UserUpdateRequestModel):
-    hashed_password = auth_handler.encode_password(user_model.password)
+    # hashed_password = auth_handler.encode_password(user_model.password)
+    logger.info(f"update_user: {user_model}")
     query_put("""
             UPDATE users 
                 SET
@@ -69,7 +73,7 @@ def update_user(user_model: UserUpdateRequestModel):
                     street = %s,
                     street_number = %s,
                     website = %s
-                WHERE user.id = %s;
+                WHERE id = %s;
             """,
               (
                     user_model.name,
@@ -83,8 +87,6 @@ def update_user(user_model: UserUpdateRequestModel):
                     user_model.id
                 )
                 )
-              )
-              )
     user = get_user_by_email(user_model.email)
     return user[0]
 

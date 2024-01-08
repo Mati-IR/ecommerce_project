@@ -34,7 +34,7 @@ function renderData() {
   } else {
     console.log('Nie znaleziono danych dla klucza "user" w localStorage.');
   }
-  fetch(ApiGateway + "/get_user/userID")
+  fetch(ApiGateway + "/get_user/" + userID)
     .then(response => response.json())
     .then(data => {
         dataFromJSON = data;
@@ -80,17 +80,35 @@ function hideForm() {
 
 function changeData(event) {
   event.preventDefault();
-
+/*
+class UserUpdateRequestModel(BaseModel):
+    id: int
+    name: str
+    email: EmailStr
+    phone: str
+    city: str
+    postal_code: str
+    street: str
+    street_number: str
+    website: str
+*/
   data = {
+    "id": JSON.parse(localStorage.getItem('user')).id,
     "name": document.getElementById('inputName').value,
     "email": document.getElementById('inputEmail').value,
     "phone": document.getElementById('inputPhone').value,
     "city": document.getElementById('inputCity').value,
-    "postalCode": document.getElementById('inputPostalCode').value,
+    "postal_code": document.getElementById('inputPostalCode').value,
     "street": document.getElementById('inputStreet').value,
-    "streetNumber": document.getElementById('inputStreetNumber').value,
+    "street_number": document.getElementById('inputStreetNumber').value,
     "website": document.getElementById('inputWebsite').value
   };
+  // log entire data object contents
+  for (const key in data) {
+    if (data.hasOwnProperty(key)) {
+      console.log(key + " -> " + data[key]);
+    }
+  }
   const requestOptions = {
     method: 'PUT',
     headers: {
