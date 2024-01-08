@@ -12,6 +12,8 @@ async function getBasket() {
 }
 
 async function addProduct(event) {
+    // stop propagation to prevent generateFullPreview function from being called
+    event.stopPropagation();
     const userId = JSON.parse(localStorage.getItem('user')).id;
     const listingId = event.target.parentElement.parentElement.querySelector('.listing-id').textContent;
     try {
@@ -33,6 +35,8 @@ async function addProduct(event) {
 }
 
 function removeProductFromFavourites(event) {
+    // stop propagation to prevent generateFullPreview function from being called
+    event.stopPropagation();
     const userId = JSON.parse(localStorage.getItem('user')).id;
     const listingId = event.target.parentElement.parentElement.querySelector('.listing-id').textContent;
     fetch(`${apiBaseUrl}/basket/remove_product/${listingId}/${userId}`, {

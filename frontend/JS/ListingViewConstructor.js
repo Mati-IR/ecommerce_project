@@ -1,6 +1,16 @@
 const ApiGateway = 'http://127.0.0.1:8000'; // Replace with your actual API base URL
 const ApiKey = 'SECRET'
 
+function convertToAscii(stringWithPolishCharacters) {
+    const polishToAsciiMap = {
+        'ą': 'a', 'ć': 'c', 'ę': 'e', 'ł': 'l', 'ń': 'n',
+        'ó': 'o', 'ś': 's', 'ż': 'z', 'ź': 'z', 'Ą': 'A',
+        'Ć': 'C', 'Ę': 'E', 'Ł': 'L', 'Ń': 'N', 'Ó': 'O',
+        'Ś': 'S', 'Ż': 'Z', 'Ź': 'Z'
+    };
+
+    return stringWithPolishCharacters.replace(/[ąćęłńóśżźĄĆĘŁŃÓŚŻŹ]/g, match => polishToAsciiMap[match] || match);
+}
 function generateFullPreview() {
         // Get the current URL
     const queryString = window.location.search;
@@ -32,25 +42,25 @@ function generateFullPreview() {
             document.getElementById('creation_date').textContent = data[0].creationDate;
             document.getElementById('category').textContent = data[0].category;
             document.getElementById('description').textContent = data[0].description;
-            document.getElementById('price').textContent = data[0].price;
+            document.getElementById('price').textContent = data[0].price + "zł";
             document.getElementById('email').textContent = data[0].email;
             document.getElementById('phone').textContent = data[0].phone;
             console.log('Location:', data[0].location);
             document.getElementById('address').textContent = data[0].location;
-            const addressPlaceholder = document.getElementById('addressPlaceholder');
-            const mapIframe = document.getElementById('mapIframe');
+            const addressPlaceholder = document.getElementById('address');
+            const mapIframe = document.getElementById('map');
 
             if (addressPlaceholder && mapIframe) {
-            addressPlaceholder.textContent = data[0].location;
+                addressPlaceholder.textContent = data[0].location;
 
-            // Assuming data.mapLocation is a string with the desired location for the map
-            const mapLocation = encodeURIComponent(data.mapLocation);
+                // Assuming data.mapLocation is a string with the desired location for the map
+                const mapLocation = encodeURIComponent(convertToAscii(addressPlaceholder.textContent)).replace(/%20/g, "+");
 
-            // Update the src attribute of the iframe with the new location
-            // replace whitespaces with + signs
-            mapLocation.replace(/\s/g, '+');
-            console.log(`https://www.google.com/maps/embed/v1/place?key=${ApiKey}&q=${mapLocation}`);
-            mapIframe.src = `https://www.google.com/maps/embed/v1/place?key=${ApiKey}&q=${mapLocation}`;
+                // Update the src attribute of the iframe with the new location
+                // replace whitespaces with + signs
+                console.log ('mapLocation:', mapLocation);
+                console.log(`https://www.google.com/maps/embed/v1/place?key=${ApiKey}&q=${mapLocation}`);
+                mapIframe.src = `https://www.google.com/maps/embed/v1/place?key=${ApiKey}&q=${mapLocation}`;
             }
 
             // fetch seller data

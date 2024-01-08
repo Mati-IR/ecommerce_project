@@ -11,6 +11,7 @@ const userIdIndex = 0;
 
     // Change location to the new URL
     window.location.href = urlWithParams;
+    event.stopPropagation();
   }
   // Funkcja do generowania struktury HTML na podstawie danych z pliku JSON
   async function generateHTMLFromJSON(listings, likedListings = []) {
@@ -58,6 +59,7 @@ const userIdIndex = 0;
             <i class="bi bi-heart-fill fs-3 icon-decoration-preview"></i>
           </div>
         `;
+        
       } else { /* Not liked */
         div.innerHTML += `
           <div class="fav" onclick="addProduct(event)">
