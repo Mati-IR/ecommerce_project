@@ -128,6 +128,16 @@ async def get_user(request: Request, user_id: int):
         )
         return response.json()
 
+@app.put("/update_user")
+async def update_user(request: Request, user_details: UserUpdateRequestModel):
+    # call identity microservice
+    async with httpx.AsyncClient() as client:
+        # get user from identity microservice by provided login and password
+        response = await client.put(
+            microservices["identity"] + "/user/update",
+            json=user_details.dict()
+        )
+        return response.json()
 
 @app.post("/create_listing")
 async def create_listing(request: Request, listing_details: ListingCreateRequestModel):

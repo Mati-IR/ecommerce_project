@@ -102,6 +102,17 @@ def update_user_api(user_details: UserUpdateRequestModel, credentials: HTTPAutho
         return JSONResponse(status_code=200, content=jsonable_encoder(user))
     return JSONResponse(status_code=401, content={'error': 'Failed to authorize'})
 
+# update user
+@app.put("/v1/user/{user_id}", response_model=UserResponseModel)
+def update_user_api(user_id: int, user_details: UserUpdateRequestModel, credentials: HTTPAuthorizationCredentials = Security(security)):
+    """
+    This user update API allow you to update user data.
+    """
+    token = credentials.credentials
+    if (auth_handler.decode_token(token)):
+        user = update_user(user_details)
+        return JSONResponse(status_code=200, content=jsonable_encoder(user))
+    return JSONResponse(status_code=401, content={'error': 'Failed to authorize'})
 
 ###############################
 ########## Test APIs ##########

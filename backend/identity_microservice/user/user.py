@@ -60,22 +60,29 @@ def update_user(user_model: UserUpdateRequestModel):
     hashed_password = auth_handler.encode_password(user_model.password)
     query_put("""
             UPDATE users 
-                SET name = %s,
+                SET
+                    name = %s,
                     email = %s,
-                    password_hash = %s 
-                WHERE user.email = %s;
-
-            UPDATE users_password
-                SET password_hash = %s
-                WHERE user_id = %s;
+                    phone = %s,
+                    city = %s,
+                    postal_code = %s,
+                    street = %s,
+                    street_number = %s,
+                    website = %s
+                WHERE user.id = %s;
             """,
               (
-                  user_model.first_name + ' ' + user_model.last_name,
-                  user_model.email,
-                  hashed_password,
-                  user_model.email,
-                  hashed_password,
-                  user_model.id
+                    user_model.name,
+                    user_model.email,
+                    user_model.phone,
+                    user_model.city,
+                    user_model.postal_code,
+                    user_model.street,
+                    user_model.street_number,
+                    user_model.website,
+                    user_model.id
+                )
+                )
               )
               )
     user = get_user_by_email(user_model.email)

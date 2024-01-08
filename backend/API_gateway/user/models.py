@@ -13,10 +13,15 @@ class SignUpRequestModel(BaseModel):
 
 
 class UserUpdateRequestModel(BaseModel):
+    id: int
+    name: str
     email: EmailStr
-    password: str
-    first_name: str
-    last_name: str
+    phone: str
+    city: str
+    postal_code: str
+    street: str
+    street_number: str
+    website: str
 
 
 class UserResponseModel(BaseModel):
