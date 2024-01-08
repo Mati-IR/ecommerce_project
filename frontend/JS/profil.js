@@ -124,6 +124,7 @@ function changeData(event) {
       // Obsługa odpowiedzi serwera po aktualizacji danych użytkownika
       console.log('Zaktualizowane dane użytkownika:', data);
       renderData();
+      displaySuccessMessage();
       // Tutaj możesz wykonać dodatkowe operacje po udanej aktualizacji
     })
     .catch(error => {
@@ -209,4 +210,14 @@ function validateForm() {
   }
 
   return true;
+}
+
+function displaySuccessMessage() {
+  const successMessage = document.getElementById('successMessage');
+  successMessage.classList.remove('d-none');
+}
+
+function closeMessage() {
+  const successMessage = document.getElementById('successMessage');
+  successMessage.classList.add('d-none');
 }
