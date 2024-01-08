@@ -17,55 +17,58 @@ const displayNames = {
   "email": "Adres email",
   "phone": "Numer telefonu",
   "city": "Miasto",
-  "postalCode": "Kod pocztowy",
+  "postal_code": "Kod pocztowy",
   "street": "Ulica",
-  "streetNumber": "Numer domu",
+  "street_number": "Numer domu",
   "website": "Strona internetowa"
 };
 
-function renderData() {
-  // Odczytanie danych z localStorage dla klucza 'user'
+async function renderData() {
   const userDataFromStorage = JSON.parse(localStorage.getItem('user'));
   const userID = userDataFromStorage.id;
-  // Sprawdzenie czy dane dla klucza 'user' istnieją w localStorage
-  if (userDataFromStorage) {
-    console.log('Dane z localStorage (klucz "user"): ', userDataFromStorage);
-    console.log('ID ', userID);
-  } else {
-    console.log('Nie znaleziono danych dla klucza "user" w localStorage.');
-  }
-  fetch(ApiGateway + "/get_user/userID")
-    .then(response => response.json())
-    .then(data => {
-        dataFromJSON = data;
-        console.log(dataFromJSON);
-        generatePreview(dataFromJSON);  // Call the function here
-    })
-    .catch(error => console.error(error));
 
+  try {
+    const response = await getUserData(userID);
+    if (response && response.ok) {
+      userData = await response.json();
+      console.log('Dane testowe:', data);
+      console.log('Dane użytkownika:', userData);
+      displayUserData(userData[0]);
+    } else {
+      throw new Error('Wystąpił problem podczas pobierania danych użytkownika.');
+    }
+  } catch (error) {
+    console.error('Błąd:', error.message);
+    // Tutaj możesz obsłużyć błąd, np. wyświetlić komunikat użytkownikowi
+  }
+}
+
+function displayUserData(userData) {
   const profileDataDiv = document.getElementById('profileData');
   profileDataDiv.innerHTML = '';
 
-  for (const key in data) {
-    if (data.hasOwnProperty(key)) {
-      const row = document.createElement('div');
-      row.classList.add('row', 'profil-decoration');
-      row.innerHTML = `
-        <div class="col">${displayNames[key]}</div>
-        <div class="col row-decoration">${data[key]}</div>
-      `;
-      profileDataDiv.appendChild(row);
+  for (const key in userData) {
+    if (userData.hasOwnProperty(key)) {
+      if (key !== 'id') { // Dodany warunek pominięcia pola "website"
+        const row = document.createElement('div');
+        row.classList.add('row', 'profil-decoration');
+        row.innerHTML = `
+          <div class="col">${displayNames[key]}</div>
+          <div class="col row-decoration">${userData[key]}</div>
+        `;
+        profileDataDiv.appendChild(row);
+        console.log('Utworzono element:', row);
+      }
     }
   }
-
-  document.getElementById('inputName').value = data.name;
-  document.getElementById('inputEmail').value = data.email;
-  document.getElementById('inputPhone').value = data.phone;
-  document.getElementById('inputCity').value = data.city;
-  document.getElementById('inputPostalCode').value = data.postalCode;
-  document.getElementById('inputStreet').value = data.street;
-  document.getElementById('inputStreetNumber').value = data.streetNumber;
-  document.getElementById('inputWebsite').value = data.website;
+  document.getElementById('inputName').value = userData.name;
+  document.getElementById('inputEmail').value = userData.email;
+  document.getElementById('inputPhone').value = userData.phone;
+  document.getElementById('inputCity').value = userData.city;
+  document.getElementById('inputPostalCode').value = userData.postalCode;
+  document.getElementById('inputStreet').value = userData.street;
+  document.getElementById('inputStreetNumber').value = userData.streetNumber;
+  document.getElementById('inputWebsite').value = userData.website;
 }
 
 function showForm() {
@@ -126,3 +129,12 @@ document.getElementById('hideFormBtn').addEventListener('click', hideForm);
 document.getElementById('changeDataForm').addEventListener('submit', changeData);
 
 renderData();
+
+async function getUserData(user_id) {
+  try {
+    const response = await fetch(`${ApiGateway}/get_user/${user_id}`);
+    return response;
+  } catch (error) {
+    throw new Error('Wystąpił problem podczas pobierania danych użytkownika.');
+  }
+}
