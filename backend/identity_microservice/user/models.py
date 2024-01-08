@@ -12,18 +12,23 @@ class SignUpRequestModel(BaseModel):
     password: str
 
 
-class UserUpdateRequestModel(BaseModel):
-    email: EmailStr
-    password: str
-    first_name: str
-    last_name: str
-
 
 class UserResponseModel(BaseModel):
     id: int
     email: EmailStr
     first_name: str
     last_name: str
+
+class UserUpdateRequestModel(BaseModel):
+    id: int
+    name: str
+    email: EmailStr
+    phone: str
+    city: str
+    postal_code: str
+    street: str
+    street_number: str
+    website: str
 
 
 class TokenModel(BaseModel):
