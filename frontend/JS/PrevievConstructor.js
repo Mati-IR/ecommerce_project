@@ -5,7 +5,19 @@ const userIdIndex = 0;
 
   function generateFullPreview(event) {
     console.log('generateFullPreview');
-    const listingId = event.target.parentElement.parentElement.querySelector('.listing-id').textContent;
+    const isPhotoClicked = event.target.classList.contains('photo');
+
+    let listingId;
+
+    if (isPhotoClicked) {
+      // Extract listing ID from the photo's parent element
+      listingId = event.currentTarget.querySelector('.listing-id').textContent;
+      console.log('Photo clicked');
+    } else {
+      // Extract listing ID from the clicked element
+      listingId = event.target.closest('.parent').querySelector('.listing-id').textContent;
+      console.log('Other part clicked');
+    }
     // Construct the URL with parameters
     const urlWithParams = `../offer_template.html?listingId=${listingId}`;
 
@@ -18,7 +30,7 @@ const userIdIndex = 0;
     const parentContainer = document.getElementById('parentContainer');
     const imageIndex = 0; //by default first image is displayed
     await Promise.all(listings.map(async item => {
-      const div = document.createElement('div');
+      const div = document.createElement('div', { is: 'parent' });
       div.classList.add('parent');
       const dateOnlyString = item.creation_date.substring(0, 10);
       const isLiked = likedListings.find(likedItem => likedItem.listing_id === item.id);
@@ -39,7 +51,7 @@ const userIdIndex = 0;
       }
     
       console.log("imgUrl: " + imgUrl);
-  
+
       div.innerHTML = `
         <div class="photo"> <img src="${imgUrl}" alt="Zdjęcie ogłoszenia"></div>
         <div class="title">${item.title}</div>
@@ -47,7 +59,7 @@ const userIdIndex = 0;
         <div class="loc">${item.location}</div>
         <div class="date">${dateOnlyString}</div>
         <div class="listing-id">${listingId}</div>
-      `; 
+      `;
       // add generateFullPreview function to onclick event and change mouse on hover
       div.setAttribute('onclick', 'generateFullPreview(event)');
       div.setAttribute('onmouseover', 'this.style.cursor = "pointer"');
