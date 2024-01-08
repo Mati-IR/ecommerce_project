@@ -1,5 +1,5 @@
 const ApiGateway = 'http://127.0.0.1:8000'; // Replace with your actual API base URL
-const ApiKey = 'AIzaSyB3aHCKN6yxeqkCxY0PjOLH2rpx8LsnQ-8'
+const ApiKey = 'SECRET'
 
 function generateFullPreview() {
         // Get the current URL
