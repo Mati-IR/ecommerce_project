@@ -31,7 +31,6 @@ async function renderData() {
     const response = await getUserData(userID);
     if (response && response.ok) {
       userData = await response.json();
-      console.log('Dane testowe:', data);
       console.log('Dane użytkownika:', userData);
       displayUserData(userData[0]);
     } else {
@@ -41,7 +40,7 @@ async function renderData() {
     console.error('Błąd:', error.message);
     // Tutaj możesz obsłużyć błąd, np. wyświetlić komunikat użytkownikowi
   }
-
+}
 function displayUserData(userData) {
   const profileDataDiv = document.getElementById('profileData');
   profileDataDiv.innerHTML = '';
@@ -64,9 +63,9 @@ function displayUserData(userData) {
   document.getElementById('inputEmail').value = userData.email;
   document.getElementById('inputPhone').value = userData.phone;
   document.getElementById('inputCity').value = userData.city;
-  document.getElementById('inputPostalCode').value = userData.postalCode;
+  document.getElementById('inputPostalCode').value = userData.postal_code;
   document.getElementById('inputStreet').value = userData.street;
-  document.getElementById('inputStreetNumber').value = userData.streetNumber;
+  document.getElementById('inputStreetNumber').value = userData.street_number;
   document.getElementById('inputWebsite').value = userData.website;
 }
 
@@ -82,18 +81,7 @@ function hideForm() {
 
 function changeData(event) {
   event.preventDefault();
-/*
-class UserUpdateRequestModel(BaseModel):
-    id: int
-    name: str
-    email: EmailStr
-    phone: str
-    city: str
-    postal_code: str
-    street: str
-    street_number: str
-    website: str
-*/
+  
   data = {
     "id": JSON.parse(localStorage.getItem('user')).id,
     "name": document.getElementById('inputName').value,
@@ -118,7 +106,11 @@ class UserUpdateRequestModel(BaseModel):
     },
     body: JSON.stringify(data)
   };
-
+  // Dodanie walidacji formularza przed wysłaniem żądania PUT
+  const isValid = validateForm();
+  if (!isValid) {
+    return;
+  }
   // Wyślij żądanie do serwera
   fetch('http://127.0.0.1:8000/update_user', requestOptions)
     .then(response => {
@@ -131,6 +123,7 @@ class UserUpdateRequestModel(BaseModel):
     .then(data => {
       // Obsługa odpowiedzi serwera po aktualizacji danych użytkownika
       console.log('Zaktualizowane dane użytkownika:', data);
+      renderData();
       // Tutaj możesz wykonać dodatkowe operacje po udanej aktualizacji
     })
     .catch(error => {
@@ -138,7 +131,6 @@ class UserUpdateRequestModel(BaseModel):
       console.error('Błąd:', error.message);
       // Tutaj możesz wyświetlić komunikat błędu użytkownikowi
     });
-  renderData();
 }
 
 document.getElementById('showFormBtn').addEventListener('click', showForm);
@@ -154,4 +146,67 @@ async function getUserData(user_id) {
   } catch (error) {
     throw new Error('Wystąpił problem podczas pobierania danych użytkownika.');
   }
+}
+
+function validateEmail(email) {
+  // Prosta walidacja adresu email
+  const re = /\S+@\S+\.\S+/;
+  return re.test(String(email).toLowerCase());
+}
+
+function validatePhone(phone) {
+  // Prosta walidacja numeru telefonu
+  const re = /^\d{3}-\d{3}-\d{3}$/;
+  return re.test(String(phone));
+}
+
+function validatePostalCode(postalCode) {
+  // Prosta walidacja kodu pocztowego
+  const re = /^\d{5}$/;
+  return re.test(String(postalCode));
+}
+
+function validateStreetNumber(streetNumber) {
+  // Prosta walidacja numeru domu - przykładowy wzorzec (tylko cyfry)
+  const re = /^\d+$/;
+  return re.test(String(streetNumber));
+}
+
+function validateForm() {
+  const name = document.getElementById('inputName').value;
+  const email = document.getElementById('inputEmail').value;
+  const phone = document.getElementById('inputPhone').value;
+  const city = document.getElementById('inputCity').value;
+  const postalCode = document.getElementById('inputPostalCode').value;
+  const street = document.getElementById('inputStreet').value;
+  const streetNumber = document.getElementById('inputStreetNumber').value;
+  const website = document.getElementById('inputWebsite').value;
+  
+  // Prosta walidacja danych
+  if (!name || !email || !phone || !city || !postalCode || !street || !streetNumber) {
+    alert('Wszystkie pola są wymagane');
+    return false;
+  }
+
+  if (!validateEmail(email)) {
+    alert('Nieprawidłowy adres email');
+    return false;
+  }
+
+  if (!validatePhone(phone)) {
+    alert('Nieprawidłowy numer telefonu (oczekiwany format: 123-456-789)');
+    return false;
+  }
+
+  if (!validatePostalCode(postalCode)) {
+    alert('Nieprawidłowy kod pocztowy (oczekiwany format: 12345)');
+    return false;
+  }
+  
+  if (!validateStreetNumber(streetNumber)) {
+    alert('Nieprawidłowy numer domu');
+    return false;
+  }
+
+  return true;
 }
