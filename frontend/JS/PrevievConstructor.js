@@ -28,7 +28,7 @@ const userIdIndex = 0;
   // Funkcja do generowania struktury HTML na podstawie danych z pliku JSON
   async function generateHTMLFromJSON(listings, likedListings = []) {
     const parentContainer = document.getElementById('parentContainer');
-    const imageIndex = 0; //by default first image is displayed
+    const imageIndex = 0; // domyślnie wyświetlany jest pierwszy obrazek
     await Promise.all(listings.map(async item => {
       const div = document.createElement('div', { is: 'parent' });
       div.classList.add('parent');
@@ -36,11 +36,11 @@ const userIdIndex = 0;
       const isLiked = likedListings.find(likedItem => likedItem.listing_id === item.id);
       const listingId = item.id;
       let imgUrl = null;
-      // fetch @app.get("/listings/{listing_id}/{img_idx}/image")
+  
       try {
         const response = await fetch(ApiGateway + 'listings/' + item.id + '/' + imageIndex + '/image');
         const blob = await response.blob();
-      
+  
         if (blob.size > 0) {
           imgUrl = URL.createObjectURL(blob);
         } else {
@@ -49,36 +49,41 @@ const userIdIndex = 0;
       } catch (error) {
         console.error('Error fetching images:', error);
       }
-    
-      console.log("imgUrl: " + imgUrl);
-
-      div.innerHTML = `
-        <div class="photo"> <img src="${imgUrl}" alt="Zdjęcie ogłoszenia"></div>
+  
+      console.log(item.id+"imgUrl: " + imgUrl);
+  
+      let generatedHTML = `
         <div class="title">${item.title}</div>
         <div class="price-pre">${item.price} zł</div>
         <div class="loc">${item.location}</div>
         <div class="date">${dateOnlyString}</div>
-        <div class="listing-id">${listingId}</div>
+        <div class="listing-id" style="color: white;">${listingId}</div>
       `;
-      // add generateFullPreview function to onclick event and change mouse on hover
+  
+      // Dodaj zdjęcie, jeśli istnieje
+      if (imgUrl) {
+        generatedHTML = `<div class="photo"> <img src="${imgUrl}" alt="Zdjęcie ogłoszenia"></div>` + generatedHTML;
+      }
+  
+      div.innerHTML = generatedHTML;
+  
       div.setAttribute('onclick', 'generateFullPreview(event)');
       div.setAttribute('onmouseover', 'this.style.cursor = "pointer"');
-
-      
+  
       if (isLiked) {
         div.innerHTML += `
           <div class="fav" onclick="removeProductFromFavourites(event)">
             <i class="bi bi-heart-fill fs-3 icon-decoration-preview"></i>
           </div>
         `;
-        
-      } else { /* Not liked */
+      } else {
         div.innerHTML += `
           <div class="fav" onclick="addProduct(event)">
             <i class="bi bi-heart fs-3 icon-decoration-preview"></i>
           </div>
         `;
       }
+  
       parentContainer.appendChild(div);
     }));
   }
