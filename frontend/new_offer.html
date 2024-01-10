@@ -16,6 +16,11 @@
       <!-- MENU NAVI -->
     </div>
 
+    <div id="error-messages-container"></div>
+    <div id="success-message" style="display: none;">
+      <p id="success-text">Gratulacje pomyślnie dodałeś ogłoszenie.</p>
+      <button id="close-success-message">Zamknij</button>
+    </div>
     <div class="main">
       <form id="newOfferForm">
         <h2>Dodaj ogłoszenie</h2>
@@ -23,22 +28,11 @@
           <div class="form-group">
             <label for="title"><strong>Tytuł ogłoszenie</strong></label>
             <input type="text" class="form-control" id="title" aria-describedby="titleHelp" placeholder="Np. Sprzedam opla" required minlength="1" maxlength="70" required>
-            <small id="titleHelp" class="form-text text-muted">Podpowiedź</small>
           </div>
           <div class="form-group">
             <label for="category"><strong>Kategoria</strong></label><br>
             <select id="category">
-              <option value="Jobs">Jobs</option>
-              <option value="Housing">Housing</option>
-              <option value="Services">Services</option>
-              <option value="Vehicles">Vehicles</option>
-              <option value="Electronics">Electronics</option>
-              <option value="Furniture">Furniture</option>
-              <option value="Clothing & Accessories">Clothing & Accessories</option>
-              <option value="Free Stuff">Free Stuff</option>
-              <option value="Pets">Pets</option>
-              <option value="Gigs">Gigs</option>
-              <option value="Other">Other</option>
+
             </select>
           </div>
           <div class="form-group">

@@ -350,3 +350,45 @@ body{
   .alert {
     position: relative;
   }
+
+#error-messages-container {
+    background-color: white;
+}
+
+/* Styles for the error messages */
+.error-message {
+    color: red;
+    animation: blinkAnimation 1s infinite; /* Applying the blinking animation */
+}
+
+/* Blinking animation */
+@keyframes blinkAnimation {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+#success-message {
+  border: 1px solid #4CAF50;
+  border-radius: 5px;
+  background-color: #e9f5e9;
+}
+#success-text {
+  color: green;
+}
+#close-success-message {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+#close-success-message:hover {
+  background-color: #45a049;
+}
