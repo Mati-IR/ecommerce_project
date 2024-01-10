@@ -47,7 +47,18 @@ function displayUserData(userData) {
 
   for (const key in userData) {
     if (userData.hasOwnProperty(key)) {
-      if (key !== 'id') { // Dodany warunek pominięcia pola "website"
+      if (key === 'website') {
+        const row = document.createElement('div');
+        row.classList.add('row', 'profil-decoration');
+        row.innerHTML = `
+          <div class="col">${displayNames[key]} (Niewymagane)</div>
+          <div class="col row-decoration">${userData[key]}</div>
+        `;
+        profileDataDiv.appendChild(row);
+        console.log('Utworzono element:', row);
+      }
+
+      else if (key !== 'id') {
         const row = document.createElement('div');
         row.classList.add('row', 'profil-decoration');
         row.innerHTML = `
