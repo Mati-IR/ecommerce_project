@@ -1,5 +1,5 @@
 const ApiGateway = 'http://127.0.0.1:8000'; // Replace with your actual API base URL
-
+import {generatePreview} from "./PrevievConstructor.js";
 let data = {
   "name": "John Doe",
   "email": "john@example.com",
@@ -30,7 +30,7 @@ async function renderData() {
   try {
     const response = await getUserData(userID);
     if (response && response.ok) {
-      userData = await response.json();
+      const userData = await response.json();
       console.log('Dane użytkownika:', userData);
       displayUserData(userData[0]);
     } else {
@@ -55,7 +55,6 @@ function displayUserData(userData) {
           <div class="col row-decoration">${userData[key]}</div>
         `;
         profileDataDiv.appendChild(row);
-        console.log('Utworzono element:', row);
       }
 
       else if (key !== 'id') {
@@ -66,7 +65,6 @@ function displayUserData(userData) {
           <div class="col row-decoration">${userData[key]}</div>
         `;
         profileDataDiv.appendChild(row);
-        console.log('Utworzono element:', row);
       }
     }
   }
@@ -232,3 +230,98 @@ function closeMessage() {
   const successMessage = document.getElementById('successMessage');
   successMessage.classList.add('d-none');
 }
+
+const sampleObjects = [
+  {
+    "id": 28,
+    "creator_id": 2,
+    "creation_date": "2024-01-10T14:35:00",
+    "title": "tes",
+    "description": "sd",
+    "price": 5,
+    "location": "Laczna 45",
+    "category_id": 1
+  },
+  {
+    "id": 23,
+    "creator_id": 3,
+    "creation_date": "2024-01-11T09:20:00",
+    "title": "sample",
+    "description": "example",
+    "price": 10,
+    "location": "Example Street 123",
+    "category_id": 2
+  },
+  {
+    "id": 25,
+    "creator_id": 4,
+    "creation_date": "2024-01-12T18:45:00",
+    "title": "another",
+    "description": "object",
+    "price": 15,
+    "location": "Test Avenue 789",
+    "category_id": 3
+  }
+];
+
+const emptydata = [];
+
+async function getUserListing(userId) {
+  console.log("userId", userId);
+
+  try {
+      //const response = await fetch(`${API}/basket/${userId}`);
+      //const data = await response.json();
+      console.log('user listing data', sampleObjects);
+
+      // Return or use the listingIds array as needed
+      return sampleObjects;
+  } catch (error) {
+      console.error('Error fetching basket:', error);
+      // Handle the error as needed
+  }
+}
+
+const userDataFromLS = JSON.parse(localStorage.getItem('user'));
+const userIDFromLS = userDataFromLS.id;
+const UserListingFromDB = await getUserListing(userIDFromLS)
+console.log("UserListingFromDB", UserListingFromDB);
+if (UserListingFromDB.length === 0) {
+  // If there are no liked listings, display the message
+  document.getElementById('noUserListing').style.display = 'block';
+} else {
+  // If there are liked listings, generate and display the preview
+  await generatePreview(UserListingFromDB);
+}
+
+async function deleteProduct(event) {
+  event.preventDefault();
+
+  const listingId = event.target.closest('.parent').querySelector('.listing-id').textContent;
+
+  const requestOptions = {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  try {
+    const response = await fetch(`${ApiGateway}/delete_listing/${listingId}`, requestOptions);
+    if (response.ok) {
+      console.log(`Listing ${listingId} deleted successfully.`);
+      // Additional logic after successful deletion
+    } else {
+      throw new Error('Failed to delete the listing.');
+    }
+  } catch (error) {
+    console.error('Error deleting the listing:', error.message);
+    // Handle the error as needed
+  }
+}
+
+document.getElementById('parentContainer').addEventListener('click', function (event) {
+  if (event.target.classList.contains('trash')) {
+    deleteProduct(event);
+  }
+});
