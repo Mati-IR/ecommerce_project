@@ -67,7 +67,7 @@ const userIdIndex = 0;
   
       div.innerHTML = generatedHTML;
   
-      div.setAttribute('onclick', 'generateFullPreview(event)');
+      div.addEventListener('click', generateFullPreview);
       div.setAttribute('onmouseover', 'this.style.cursor = "pointer"');
   
       if (isLiked) {
@@ -90,7 +90,7 @@ const userIdIndex = 0;
 
 
 
-  function generatePreview(listings) {
+  export function generatePreview(listings) {
     let userId = null;
     try {
       /* {id: 1, name: "a", email: "a@gmail.com"} */
@@ -117,13 +117,32 @@ const userIdIndex = 0;
   }
 
 
-let dataFromJSON = [];
+//let dataFromJSON = [];
 // save data from Api Gateway to dataFromJSON
-fetch(ApiGateway + 'listingsByCategory/1/10')
-    .then(response => response.json())
-    .then(data => {
-        dataFromJSON = data;
-        console.log(dataFromJSON);
-        generatePreview(dataFromJSON);  // Call the function here
-    })
-    .catch(error => console.error(error));
+//fetch(ApiGateway + 'listingsByCategory/1/10')
+//    .then(response => response.json())
+//    .then(data => {
+//        dataFromJSON = data;
+//        console.log(dataFromJSON);
+//        generatePreview(dataFromJSON);  // Call the function here
+//    })
+//    .catch(error => console.error(error));
+async function fetchDataAndGeneratePreview() {
+    try {
+        const response = await fetch(`${ApiGateway}listingsByCategory/1/20`);
+        const data = await response.json();
+        console.log(data);
+        generatePreview(data);
+        // Tutaj możesz dodać logikę do obsługi pobranych danych i wywołać funkcję generatePreview
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+}
+
+function executeOnIndexPage() {
+  if (window.location.pathname.includes("index.html")) {
+      fetchDataAndGeneratePreview();
+  }
+}
+
+executeOnIndexPage();

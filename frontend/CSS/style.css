@@ -392,3 +392,10 @@ body{
 #close-success-message:hover {
   background-color: #45a049;
 }
+
+#noLikedListingsMessage {
+  display: none;
+  font-size: 24px;
+  text-align: center;
+  margin-top: 20px; /* Add some top margin */
+}

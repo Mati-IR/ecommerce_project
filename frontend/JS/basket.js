@@ -48,6 +48,12 @@ function removeProductFromFavourites(event) {
             event.target.classList.remove('bi-heart-fill');
             event.target.classList.add('bi-heart');
             event.target.parentElement.setAttribute('onclick', 'addProduct(event)');
+
+            // Check if the current page is basket_page.html before reloading
+            if (window.location.pathname.includes('basket_page.html')) {
+                // Reload the page
+                window.location.reload();
+            }
         })
         .catch(error => {
             console.error('Error removing product:', error);
