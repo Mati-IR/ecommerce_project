@@ -25,12 +25,12 @@ CREATE TABLE IF NOT EXISTS `listing_photos` (
 CREATE TABLE IF NOT EXISTS `categories` (
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `name` VARCHAR(255) NOT NULL UNIQUE,
-  'ordinal' INT NOT NULL DEFAULT '0
+  `ordinal` INT NOT NULL DEFAULT 0,
   `description` TEXT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Insert extended categories
-INSERT INTO `categories` (`name`, `description`) VALUES
+INSERT INTO `categories` (`name`, `description`, `ordinal`) VALUES
 ('Jobs', 'Job listings and employment opportunities', 0),
 ('Housing', 'Real estate, rentals, and shared accommodations', 1),
 ('Services', 'Local services offered by professionals and businesses', 2),

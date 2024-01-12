@@ -95,7 +95,7 @@ def get_listings_by_ids(listings_ids):
 
 def get_all_categories():
     # Database query to fetch all categories
-    return query_get("SELECT id, name, description FROM categories;", None)
+    return query_get("SELECT id, name, description, ordinal FROM categories;", None)
 
 def upload_file(listing_id, file_name: str, storage: str):
     logger.debug(f"crud.upload_file Received request to upload file {file_name} of type {storage} for listing_id: {listing_id}")
