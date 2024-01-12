@@ -293,35 +293,3 @@ if (UserListingFromDB.length === 0) {
   // If there are liked listings, generate and display the preview
   await generatePreview(UserListingFromDB);
 }
-
-async function deleteProduct(event) {
-  event.preventDefault();
-
-  const listingId = event.target.closest('.parent').querySelector('.listing-id').textContent;
-
-  const requestOptions = {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  };
-
-  try {
-    const response = await fetch(`${ApiGateway}/delete_listing/${listingId}`, requestOptions);
-    if (response.ok) {
-      console.log(`Listing ${listingId} deleted successfully.`);
-      // Additional logic after successful deletion
-    } else {
-      throw new Error('Failed to delete the listing.');
-    }
-  } catch (error) {
-    console.error('Error deleting the listing:', error.message);
-    // Handle the error as needed
-  }
-}
-
-document.getElementById('parentContainer').addEventListener('click', function (event) {
-  if (event.target.classList.contains('trash')) {
-    deleteProduct(event);
-  }
-});

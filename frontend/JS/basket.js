@@ -59,3 +59,26 @@ function removeProductFromFavourites(event) {
             console.error('Error removing product:', error);
         });
 }
+
+async function deleteProduct(event) {
+    // stop propagation to prevent generateFullPreview function from being called
+    event.stopPropagation();
+    const userId = JSON.parse(localStorage.getItem('user')).id;
+    const listingId = event.target.parentElement.parentElement.querySelector('.listing-id').textContent;
+    try {
+        const response = await fetch(`${apiBaseUrl}/listings/${listingId}`, {
+            method: 'DELETE'
+        });
+        const data = await response.json();
+        console.log('usunieto olgoszenie o id ',listingId)
+        // Handle success response here, if needed
+
+        // Check if the current page is basket_page.html before reloading
+        /*if (window.location.pathname.includes('profil.html')) {
+            // Reload the page
+            window.location.reload();
+        }*/
+    } catch (error) {
+        console.error('Error deleting product:', error);
+    }
+}
