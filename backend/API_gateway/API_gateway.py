@@ -165,23 +165,6 @@ async def create_listing(request: Request, listing_details: ListingCreateRequest
             details = response.json()
             raise HTTPException(status_code=response.status_code, detail=details)
 
-# remove listing by ID
-@app.delete("/listings/{listing_id}")
-async def remove_listing_by_id(request: Request, listing_id: int):
-    # Todo implement file deletion from file manager
-    return_response = None
-    # Forward the request to the listings microservice
-    async with httpx.AsyncClient() as client:
-        response = await client.delete(microservices["listings"] + f"/listings/{listing_id}")
-        return_response = response.json()
-    
-    async with httpx.AsyncClient() as client:
-        response = await client.delete(microservices["basket"] + f"/remove_product_all_users/{listing_id}")
-        if response.status_code != 200:
-            return_response = response.json()
-
-    return return_response
-    
 # Helper function to generate a unique filename
 def generate_unique_filename(listing_id: int, file_extension: str) -> str:
     unique_id = str(uuid.uuid4())
