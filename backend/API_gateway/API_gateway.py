@@ -337,6 +337,23 @@ async def get_listings_by_category(request: Request, category_id: int, product_c
         response = await client.get(f"{microservices['listings']}/listings/{ids}", timeout=30)
         return response.json()
 
+# remove listing by ID
+@app.delete("/listings/{listing_id}")
+async def remove_listing_by_id(request: Request, listing_id: int):
+    # Todo implement file deletion from file manager
+    return_response = None
+    # Forward the request to the listings microservice
+    async with httpx.AsyncClient() as client:
+        response = await client.delete(microservices["listings"] + f"/listings/{listing_id}")
+        return_response = response.json()
+
+    async with httpx.AsyncClient() as client:
+        response = await client.delete(microservices["basket"] + f"/remove_product_all_users/{listing_id}")
+        if response.status_code != 200:
+            return_response = response.json()
+
+    return return_response
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
 
