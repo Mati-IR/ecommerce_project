@@ -29,7 +29,7 @@ const userIdIndex = 0;
   async function generateHTMLFromJSON(listings, likedListings = []) {
     const parentContainer = document.getElementById('parentContainer');
     const imageIndex = 0; // domyślnie wyświetlany jest pierwszy obrazek
-
+    console.log("Listings in generateHTMLFromJSON: " + listings);
     await Promise.all(listings.map(async item => {
         const div = document.createElement('div', { is: 'parent' });
         div.classList.add('parent');

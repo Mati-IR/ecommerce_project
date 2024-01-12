@@ -67,6 +67,13 @@ def read_listings(listings_ids: str):
         raise HTTPException(status_code=404, detail="Listing not found")
     return db_listings
 
+@app.get("/listings_created_by/{user}")
+def read_listings_created_by(user: str):
+    db_listings = crud.get_listings_created_by(user=user)
+    if db_listings is None:
+        raise HTTPException(status_code=404, detail="Listing not found")
+    return db_listings
+
 @app.post("/listings/create", response_model=int)
 def create_listing(listing: ListingCreateRequestModel) -> int:
     # Log the request content

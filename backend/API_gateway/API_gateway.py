@@ -294,6 +294,13 @@ async def get_listing_by_id(request: Request, listing_id: int):
     async with httpx.AsyncClient() as client:
         response = await client.get(microservices["listings"] + f"/listing/{listing_id}")
         return response.json()
+
+@app.get("/listings_created_by/{user}")
+async def get_listings_created_by(request: Request, user: str):
+    # Forward the request to the listings microservice
+    async with httpx.AsyncClient() as client:
+        response = await client.get(microservices["listings"] + f"/listings_created_by/{user}")
+        return response.json()
     
 @app.get("/basket/{user_id}")
 async def get_basket(request: Request, user_id: int):

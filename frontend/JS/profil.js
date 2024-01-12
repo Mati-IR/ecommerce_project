@@ -231,38 +231,6 @@ function closeMessage() {
   successMessage.classList.add('d-none');
 }
 
-const sampleObjects = [
-  {
-    "id": 28,
-    "creator_id": 2,
-    "creation_date": "2024-01-10T14:35:00",
-    "title": "tes",
-    "description": "sd",
-    "price": 5,
-    "location": "Laczna 45",
-    "category_id": 1
-  },
-  {
-    "id": 23,
-    "creator_id": 3,
-    "creation_date": "2024-01-11T09:20:00",
-    "title": "sample",
-    "description": "example",
-    "price": 10,
-    "location": "Example Street 123",
-    "category_id": 2
-  },
-  {
-    "id": 25,
-    "creator_id": 4,
-    "creation_date": "2024-01-12T18:45:00",
-    "title": "another",
-    "description": "object",
-    "price": 15,
-    "location": "Test Avenue 789",
-    "category_id": 3
-  }
-];
 
 const emptydata = [];
 
@@ -270,12 +238,12 @@ async function getUserListing(userId) {
   console.log("userId", userId);
 
   try {
-      //const response = await fetch(`${API}/basket/${userId}`);
-      //const data = await response.json();
-      console.log('user listing data', sampleObjects);
+      const response = await fetch(`${ApiGateway}/listings_created_by/${userId}`);
+      const data = await response.json();
+      console.log("data", data);
 
-      // Return or use the listingIds array as needed
-      return sampleObjects;
+      // Return response contents only, without HTTP status code etc.
+       return data;
   } catch (error) {
       console.error('Error fetching basket:', error);
       // Handle the error as needed

@@ -142,3 +142,20 @@ def get_amount_of_images(listing_id):
     
     logger.debug(f"crud.get_amount_of_images amount: {amount}")
     return amount
+
+def get_listings_created_by(user):
+    return query_get("""
+                    SELECT
+                        id,
+                        creator_id,
+                        creation_date,
+                        title,
+                        description,
+                        price,
+                        location,
+                        category_id
+                    FROM listings
+                    WHERE creator_id = %s;
+                    """,
+                     (user,)
+                     )
