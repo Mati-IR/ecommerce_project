@@ -29,8 +29,15 @@ function generateFullPreview(event) {
 async function generateHTMLFromJSON(listings, likedListings = []) {
     const parentContainer = document.getElementById('parentContainer');
     const imageIndex = 0; // domyślnie wyświetlany jest pierwszy obrazek
+    let emptyListInfoRemoved = false;
 
     await Promise.all(listings.map(async item => {
+        if (!emptyListInfoRemoved) {
+            // Remove noLikedListingsMessage
+            const noLikedListingsMessage = document.getElementById('noLikedListingsMessage');
+            noLikedListingsMessage.remove();
+            emptyListInfoRemoved = true;
+        }
         const div = document.createElement('div', { is: 'parent' });
         div.classList.add('parent');
         const dateOnlyString = item.creation_date.substring(0, 10);
@@ -141,7 +148,10 @@ export function generatePreview(listings) {
 async function fetchDataAndGeneratePreview() {
     try {
         // TODO get category ID from URL
-        const response = await fetch(`${ApiGateway}listingsByCategory/1/20`);
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const chosenCategory = urlParams.get('categoryId');
+        const response = await fetch(`${ApiGateway}listingsByCategory/${chosenCategory}/20`);
         const data = await response.json();
         console.log(data);
         generatePreview(data);
@@ -152,9 +162,7 @@ async function fetchDataAndGeneratePreview() {
 }
 
 function executeOnIndexPage() {
-    if (window.location.pathname.includes("index.html")) {
-        fetchDataAndGeneratePreview();
-    }
+    fetchDataAndGeneratePreview();
 }
 
 executeOnIndexPage();
