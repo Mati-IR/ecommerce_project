@@ -12,7 +12,8 @@ const translatedCategories = [
     "Inne"
 ];
 let categories = [];
-fetch("http://127.0.0.1:8000/categories")
+const ApiGateway = "http://127.0.0.1:8000/";
+fetch(ApiGateway + "categories")
     .then(response => response.json())
     .then(data => {
         const originalCategories = data; // Assuming data is the array of original categories
@@ -34,7 +35,7 @@ fetch("http://127.0.0.1:8000/categories")
       }
 
 function getListingByID(listingID) {
-    fetch("http://127.0.0.1:8000/" + listingID)
+    fetch(ApiGateway + listingID)
         .then(response => response.json())
         .then(data => {
             return data;
@@ -54,7 +55,7 @@ async function uploadImages(images, listing_id) {
         bodyFormData.append('file', images[i]);
         console.log("Uploading image: " + images[i].name + " to listing: " + listing_id);
         try {
-            const response = await fetch("http://127.0.0.1:8000/uploadfile/" + listing_id, {
+            const response = await fetch(ApiGateway +"uploadfile/" + listing_id, {
                 method: "POST",
                 body: bodyFormData
             });
@@ -88,7 +89,7 @@ async function submitForm() {
     }
 
     try {
-        const createListingResponse = await fetch("http://127.0.0.1:8000/create_listing", {
+        const createListingResponse = await fetch(ApiGateway + "create_listing", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -179,4 +180,29 @@ function clearForm() {
     document.getElementById('address').value = '';
     document.getElementById('category').selectedIndex = 0; // Powrót do pierwszej opcji w polu wyboru kategorii
     document.getElementById('images').value = '';
+}
+
+async function deleteListing(event) {
+    event.stopPropagation();
+    const listingId = event.target.parentElement.parentElement.querySelector('.listing-id').textContent;
+    console.log("Listing ID: " + listingId);
+    try {
+        const response = await fetch(ApiGateway + "listings/" + listingId, {
+            method: "DELETE"
+        });
+        const data = await response.json();
+        if (data.error) {
+            alert("Error deleting listing!\n " + data.error);
+            return;
+        }
+        else {
+            alert("Listing deleted successfully!");
+        }
+        window.location.reload();
+
+        }
+    catch (error) {
+        console.error("Error:", error);
+        alert("Error deleting listing!\n " + error);
+    }
 }

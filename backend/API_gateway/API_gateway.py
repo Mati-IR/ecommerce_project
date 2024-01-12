@@ -351,7 +351,7 @@ async def remove_listing_by_id(request: Request, listing_id: int):
     return_response = None
     # Forward the request to the listings microservice
     async with httpx.AsyncClient() as client:
-        response = await client.delete(microservices["listings"] + f"/listings/{listing_id}")
+        response = await client.delete(microservices["listings"] + f"/listing/{listing_id}")
         return_response = response.json()
 
     async with httpx.AsyncClient() as client:

@@ -75,10 +75,11 @@ const userIdIndex = 0;
         if (currentPage.includes('profil.html')) {
             // If the current page is "profil.html," show the trash icon
             div.innerHTML += `
-                <div class="fav" onclick="deleteProduct(event)">
-                    <i class="bi bi-trash fs-3 icon-decoration-preview"></i>
+                <div class="fav" onclick="deleteListing(event)">
+                    <i class="bi bi-trash fs-3 icon-decoration-preview" "></i>
                 </div>
             `;
+
         } else {
             if (isLiked) {
                 div.innerHTML += `

@@ -125,3 +125,12 @@ def get_amount_of_images(listing_id: int):
     except Exception as e:
         logger.error(f"Error in get_amount_of_images: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/listing/{listing_id}")
+def delete_listing(listing_id: int):
+    try:
+        crud.delete_listing(listing_id)
+        return {"message": "Listing deleted successfully"}
+    except Exception as e:
+        logger.error(f"Error in delete_listing: {e}")
+        raise HTTPException(status_code=500, detail=str(e))

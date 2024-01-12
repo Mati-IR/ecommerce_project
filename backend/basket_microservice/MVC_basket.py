@@ -57,7 +57,7 @@ def remove_product_api(product : AddToBasketRequestModel):
             content={"message": "Product removed from basket successfully."}
         )
 
-@app.delete('remove_product_all_users/{listing_id}')
+@app.delete('/remove_product_all_users/{listing_id}')
 def remove_product_all_users_api(listing_id: int):
     """
     This remove_product_all_users API allow you to remove product from all users' basket.

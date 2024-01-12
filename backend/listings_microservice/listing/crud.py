@@ -159,3 +159,10 @@ def get_listings_created_by(user):
                     """,
                      (user,)
                      )
+def delete_listing(listing_id):
+    return query_put("""
+                    DELETE FROM listings
+                    WHERE id = %s;
+                    """,
+                     (listing_id,)
+                     )
