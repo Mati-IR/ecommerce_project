@@ -3,6 +3,20 @@
 const ApiGateway = 'http://127.0.0.1:8000/';
 const userIdIndex = 0;
 
+const categoryDescriptions = {
+    1: 'Praca',
+    2: 'Nieruchomości',
+    3: 'Usługi',
+    4: 'Motoryzacja',
+    5: 'Elektronika',
+    6: 'Meble',
+    7: 'Ubrania i Akcesoria',
+    8: 'Za darmo',
+    9: 'Zwierzęta',
+    10:'Prace dorywcze',
+    11:'Inne',
+};
+
 function generateFullPreview(event) {
     console.log('generateFullPreview');
     const isPhotoClicked = event.target.classList.contains('photo');
@@ -30,14 +44,22 @@ async function generateHTMLFromJSON(listings, likedListings = []) {
     const parentContainer = document.getElementById('parentContainer');
     const imageIndex = 0; // domyślnie wyświetlany jest pierwszy obrazek
     let emptyListInfoRemoved = false;
+    console.log("listings",listings)
+    console.log("listings.length",listings.length)
 
-    await Promise.all(listings.map(async item => {
-        if (!emptyListInfoRemoved) {
-            // Remove noLikedListingsMessage
-            const noLikedListingsMessage = document.getElementById('noLikedListingsMessage');
-            noLikedListingsMessage.remove();
-            emptyListInfoRemoved = true;
-        }
+    if (!listings.length) {
+        console.log("NIMA OGLOSZEN")
+        // If there are no listings, generate HTML for a message
+        const noListingsMessage = document.createElement('div');
+        noListingsMessage.textContent = 'Brak ogłoszeń w tej kategori';
+        noListingsMessage.id = 'noListingsMessage';
+        noListingsMessage.classList.add('h1', 'text-center'); // Dodaj klasy stylów
+        parentContainer.appendChild(noListingsMessage);
+        return;
+    }
+
+    else{
+        await Promise.all(listings.map(async item => {
         const div = document.createElement('div', { is: 'parent' });
         div.classList.add('parent');
         const dateOnlyString = item.creation_date.substring(0, 10);
@@ -104,6 +126,7 @@ async function generateHTMLFromJSON(listings, likedListings = []) {
 
         parentContainer.appendChild(div);
     }));
+    }
 }
 
 
@@ -151,6 +174,19 @@ async function fetchDataAndGeneratePreview() {
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         const chosenCategory = urlParams.get('categoryId');
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Uzyskaj nazwę kategorii na podstawie mapy
+            const categoryName = categoryDescriptions[chosenCategory];
+
+            // Uzyskaj istniejący element kontenera komunikatu o kategorii
+            const categoryMessageContainer = document.getElementById('categoryMessageContainer');
+
+            // Dodaj komunikat o wybranej kategorii do istniejącego kontenera
+            categoryMessageContainer.textContent = `Ogłoszenia z kategorii: ${categoryName}`;
+        });
+
+
         const response = await fetch(`${ApiGateway}listingsByCategory/${chosenCategory}/20`);
         const data = await response.json();
         console.log(data);
@@ -166,3 +202,4 @@ function executeOnIndexPage() {
 }
 
 executeOnIndexPage();
+
