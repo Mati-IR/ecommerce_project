@@ -3,20 +3,20 @@
 const ApiGateway = 'http://127.0.0.1:8000/';
 const userIdIndex = 0;
 
-  function generateFullPreview(event) {
+function generateFullPreview(event) {
     console.log('generateFullPreview');
     const isPhotoClicked = event.target.classList.contains('photo');
 
     let listingId;
 
     if (isPhotoClicked) {
-      // Extract listing ID from the photo's parent element
-      listingId = event.currentTarget.querySelector('.listing-id').textContent;
-      console.log('Photo clicked');
+        // Extract listing ID from the photo's parent element
+        listingId = event.currentTarget.querySelector('.listing-id').textContent;
+        console.log('Photo clicked');
     } else {
-      // Extract listing ID from the clicked element
-      listingId = event.target.closest('.parent').querySelector('.listing-id').textContent;
-      console.log('Other part clicked');
+        // Extract listing ID from the clicked element
+        listingId = event.target.closest('.parent').querySelector('.listing-id').textContent;
+        console.log('Other part clicked');
     }
     // Construct the URL with parameters
     const urlWithParams = `../offer_template.html?listingId=${listingId}`;
@@ -24,13 +24,20 @@ const userIdIndex = 0;
     // Change location to the new URL
     window.location.href = urlWithParams;
     event.stopPropagation();
-  }
-  // Funkcja do generowania struktury HTML na podstawie danych z pliku JSON
-  async function generateHTMLFromJSON(listings, likedListings = []) {
+}
+// Funkcja do generowania struktury HTML na podstawie danych z pliku JSON
+async function generateHTMLFromJSON(listings, likedListings = []) {
     const parentContainer = document.getElementById('parentContainer');
     const imageIndex = 0; // domyślnie wyświetlany jest pierwszy obrazek
-    console.log("Listings in generateHTMLFromJSON: " + listings);
+    let emptyListInfoRemoved = false;
+
     await Promise.all(listings.map(async item => {
+        if (!emptyListInfoRemoved) {
+            // Remove noLikedListingsMessage
+            const noLikedListingsMessage = document.getElementById('noLikedListingsMessage');
+            noLikedListingsMessage.remove();
+            emptyListInfoRemoved = true;
+        }
         const div = document.createElement('div', { is: 'parent' });
         div.classList.add('parent');
         const dateOnlyString = item.creation_date.substring(0, 10);
@@ -75,11 +82,10 @@ const userIdIndex = 0;
         if (currentPage.includes('profil.html')) {
             // If the current page is "profil.html," show the trash icon
             div.innerHTML += `
-                <div class="fav" onclick="deleteListing(event)">
-                    <i class="bi bi-trash fs-3 icon-decoration-preview" "></i>
+                <div class="fav" onclick="deleteProduct(event)">
+                    <i class="bi bi-trash fs-3 icon-decoration-preview"></i>
                 </div>
             `;
-
         } else {
             if (isLiked) {
                 div.innerHTML += `
@@ -102,31 +108,31 @@ const userIdIndex = 0;
 
 
 
-  export function generatePreview(listings) {
+export function generatePreview(listings) {
     let userId = null;
     try {
-      /* {id: 1, name: "a", email: "a@gmail.com"} */
-      const user = JSON.parse(localStorage.getItem('user'));
-      userId = user.id;
+        /* {id: 1, name: "a", email: "a@gmail.com"} */
+        const user = JSON.parse(localStorage.getItem('user'));
+        userId = user.id;
     } catch (error) {
-      console.warn("User is not logged in");
+        console.warn("User is not logged in");
     }
     let likedListings = [];
     if (null != userId) {
-      fetch(ApiGateway + 'basket/' + userId)
-        .then(response => response.json())
-        .then(data => {
-          likedListings = data;
-          console.log("Liked listings: " + likedListings);
-          generateHTMLFromJSON(listings, likedListings);
-        })
-        .catch(error => console.error(error));
+        fetch(ApiGateway + 'basket/' + userId)
+            .then(response => response.json())
+            .then(data => {
+                likedListings = data;
+                console.log("Liked listings: " + likedListings);
+                generateHTMLFromJSON(listings, likedListings);
+            })
+            .catch(error => console.error(error));
     }
     else {
-      console.warn("User is not logged in");
-      generateHTMLFromJSON(listings);
+        console.warn("User is not logged in");
+        generateHTMLFromJSON(listings);
     }
-  }
+}
 
 
 //let dataFromJSON = [];
@@ -141,7 +147,11 @@ const userIdIndex = 0;
 //    .catch(error => console.error(error));
 async function fetchDataAndGeneratePreview() {
     try {
-        const response = await fetch(`${ApiGateway}recommendationRandom/20`);
+        // TODO get category ID from URL
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const chosenCategory = urlParams.get('categoryId');
+        const response = await fetch(`${ApiGateway}listingsByCategory/${chosenCategory}/20`);
         const data = await response.json();
         console.log(data);
         generatePreview(data);
@@ -152,9 +162,7 @@ async function fetchDataAndGeneratePreview() {
 }
 
 function executeOnIndexPage() {
-  if (window.location.pathname.includes("index.html")) {
-      fetchDataAndGeneratePreview();
-  }
+    fetchDataAndGeneratePreview();
 }
 
 executeOnIndexPage();

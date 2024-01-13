@@ -67,6 +67,13 @@ def read_listings(listings_ids: str):
         raise HTTPException(status_code=404, detail="Listing not found")
     return db_listings
 
+@app.get("/listings_created_by/{user}")
+def read_listings_created_by(user: str):
+    db_listings = crud.get_listings_created_by(user=user)
+    if db_listings is None:
+        raise HTTPException(status_code=404, detail="Listing not found")
+    return db_listings
+
 @app.post("/listings/create", response_model=int)
 def create_listing(listing: ListingCreateRequestModel) -> int:
     # Log the request content
@@ -117,4 +124,13 @@ def get_amount_of_images(listing_id: int):
         return crud.get_amount_of_images(listing_id)
     except Exception as e:
         logger.error(f"Error in get_amount_of_images: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/listing/{listing_id}")
+def delete_listing(listing_id: int):
+    try:
+        crud.delete_listing(listing_id)
+        return {"message": "Listing deleted successfully"}
+    except Exception as e:
+        logger.error(f"Error in delete_listing: {e}")
         raise HTTPException(status_code=500, detail=str(e))

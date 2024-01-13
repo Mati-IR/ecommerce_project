@@ -26,7 +26,16 @@ def getRandomRecommendations(product_count: int):
     """
     recommendedProducts = query_get(
         """
-        SELECT id FROM listings ORDER BY RAND() LIMIT %s
+        SELECT
+             id,
+             creator_id,
+             creation_date,
+             title,
+             description,
+             price,
+             location,
+             category_id
+         FROM listings ORDER BY RAND() LIMIT %s
         """,
         (product_count)
     )

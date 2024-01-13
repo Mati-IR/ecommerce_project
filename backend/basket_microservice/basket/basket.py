@@ -61,3 +61,16 @@ def remove_from_basket(listing_id: int, user_id: int):
         return True
     else:
         raise HTTPException(status_code=500, detail='Error in remove_from_basket, listing still found in basket.')
+
+def remove_from_basket_all_users(listing_id: int):
+    """
+    This remove_from_basket_all_users API allow you to remove product from all users' basket.
+    """
+    query_put(
+        """
+        DELETE FROM basket WHERE listing_id = %s
+        """,
+        (listing_id)
+    )
+
+    return True
