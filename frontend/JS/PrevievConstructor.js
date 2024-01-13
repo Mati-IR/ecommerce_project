@@ -141,7 +141,7 @@ const userIdIndex = 0;
 //    .catch(error => console.error(error));
 async function fetchDataAndGeneratePreview() {
     try {
-        const response = await fetch(`${ApiGateway}listingsByCategory/1/20`);
+        const response = await fetch(`${ApiGateway}recommendationRandom/20`);
         const data = await response.json();
         console.log(data);
         generatePreview(data);
