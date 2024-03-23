@@ -1,6 +1,7 @@
 from fastapi import HTTPException
 from database.query import query_get, query_put
 import logging
+import random
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -35,9 +36,11 @@ def getRandomRecommendations(product_count: int):
              price,
              location,
              category_id
-         FROM listings ORDER BY RAND() LIMIT %s
+         FROM listings ORDER BY RAND(CURRENT_TIMESTAMP) LIMIT %s
         """,
         (product_count)
     )
+    # shuffle the list
+    random.shuffle(recommendedProducts)
     logger.info(f'recommendedProducts: {recommendedProducts}')
     return recommendedProducts

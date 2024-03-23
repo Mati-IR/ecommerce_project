@@ -50,7 +50,6 @@ async function createNavi() {
 
   if (userLoggedIn) {
     links.push(
-      { href: 'todo.html', text: 'TO DO', iconClass: 'bi-list-task' },
       { href: 'basket_page.html', text: 'ulubione', iconClass: 'bi-heart' },
     );
 

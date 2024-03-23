@@ -1,5 +1,5 @@
 const ApiGateway = 'http://127.0.0.1:8000'; // Replace with your actual API base URL
-const ApiKey = 'SECRET'
+const ApiKey = 'AIzaSyDK8GxxOSajRaK85CrFazZi-9KgLpu0u7s'
 
 function convertToAscii(stringWithPolishCharacters) {
     const polishToAsciiMap = {
