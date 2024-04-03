@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f5deb2"
+    >
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/imageView">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="20sp" >
+
+            <com.example.bazaar.FontAwesome
+                android:id="@+id/button5"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="&#xf0b1; Praca" />
+
+            <com.example.bazaar.FontAwesome
+                android:id="@+id/button4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="&#xf015; Nieruchomości" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="20sp">
+
+            <com.example.bazaar.FontAwesome
+                android:id="@+id/button7"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="&#xf7d9; Usługi" />
+
+            <com.example.bazaar.FontAwesome
+                android:id="@+id/button6"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="&#xf1b9; Motoryzacja" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="20sp" >
+
+            <com.example.bazaar.FontAwesome
+                android:id="@+id/button8"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="&#xf109; Elektronika" />
+
+            <com.example.bazaar.FontAwesome
+                android:id="@+id/button9"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="&#xf4b8; Meble" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="20sp" >
+
+            <com.example.bazaar.FontAwesome
+                android:id="@+id/button10"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="&#xf553; Ubrania i akcesoria" />
+
+            <com.example.bazaar.FontAwesome
+                android:id="@+id/button11"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="&#xf06b; Za darmo" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="20sp">
+
+            <com.example.bazaar.FontAwesome
+                android:id="@+id/button12"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="&#xf1b0; Zwierzęta" />
+
+            <com.example.bazaar.FontAwesome
+                android:id="@+id/button13"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="&#xf11a; Prace dorywcze" />
+        </TableRow>
+
+    </TableLayout>
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="147dp"
+        app:srcCompat="@drawable/logo"
+        tools:layout_editor_absoluteX="51dp"
+        android:layout_marginBottom="50dp"
+        tools:layout_editor_absoluteY="-221dp" />
+
+</RelativeLayout>

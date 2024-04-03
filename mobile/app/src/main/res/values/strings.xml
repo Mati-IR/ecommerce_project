@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">bazaar</string>
+    <string name="title_activity_menu2">Menu2</string>
 </resources>
