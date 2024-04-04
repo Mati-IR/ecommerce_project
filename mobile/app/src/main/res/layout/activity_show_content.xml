@@ -4,10 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
-    tools:context=".Menu">
-
-
+    tools:context=".ShowContent"
+    android:background="@color/background">
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
@@ -16,19 +14,14 @@
         tools:layout_editor_absoluteX="51dp"
         android:layout_marginBottom="50dp"
         tools:layout_editor_absoluteY="-221dp" />
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/Categories"
         android:layout_below="@id/imageView">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/CategoriesContainer"
-        android:orientation="vertical"
-        />
+        <LinearLayout
+            android:id="@+id/ContentContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
     </ScrollView>
-
-
 </RelativeLayout>
