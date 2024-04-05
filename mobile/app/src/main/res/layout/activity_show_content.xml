@@ -14,14 +14,10 @@
         tools:layout_editor_absoluteX="51dp"
         android:layout_marginBottom="50dp"
         tools:layout_editor_absoluteY="-221dp" />
-    <ScrollView
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_below="@id/imageView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/imageView">
-        <LinearLayout
-            android:id="@+id/ContentContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" />
-    </ScrollView>
+        android:layout_height="match_parent"/>
 </RelativeLayout>

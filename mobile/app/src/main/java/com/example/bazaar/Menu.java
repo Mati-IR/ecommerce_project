@@ -1,6 +1,7 @@
 package com.example.bazaar;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,7 +30,7 @@ public class Menu extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
         String url = "http://10.0.2.2:8000/categories";
-        JSONArray categories = new JSONArray();
+        //JSONArray categories = new JSONArray();
         Log.d("lol","lol");
         JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url, null, jsonArray -> {
             // Tutaj uzyskaj dostęp do JSONArray i jego długości
@@ -40,7 +41,6 @@ public class Menu extends AppCompatActivity {
 
             // Tworzenie guzików zależnie od długości JSONArray
             for (int i = 0; i < arraySize; i++) {
-                final int buttonId = i; // Zmienna lokalna musi być efektywnie finalna
                 Button button = new Button(this);
                 try {
                     button.setText(jsonArray.getJSONObject(i).getString("name"));
@@ -61,7 +61,12 @@ public class Menu extends AppCompatActivity {
                 button.setOnClickListener(v -> {
                     // Obsługa kliknięcia guzika
                     // Możemy korzystać z 'buttonId' i 'categories', ponieważ są to efektywnie finalne zmienne lokalne
-                    Toast.makeText(getApplicationContext(), "Button " + buttonId + " clicked. Category: " + categories.optJSONObject(buttonId).optString("name"), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), "Button " + buttonId + " clicked. Category: " + categories.optJSONObject(buttonId).optString("name"), Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(this, ShowContent.class);
+                    intent.putExtra("category", button.getId());
+                    startActivity(intent);
+
+
                 });
 
                 // Dodanie guzika do kontenera ScrollView

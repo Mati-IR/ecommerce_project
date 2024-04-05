@@ -1,5 +1,6 @@
 package com.example.bazaar;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,12 +27,16 @@ public class AdvertisementAdapter extends RecyclerView.Adapter<AdvertisementAdap
         return new AdvertisementViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull AdvertisementViewHolder holder, int position) {
         Advertisement advertisement = advertisements.get(position);
         holder.imageView.setImageResource(advertisement.getImageResource());
         holder.textTitle.setText(advertisement.getTitle());
         holder.textDescription.setText(advertisement.getDescription());
+        holder.price.setText(advertisement.getPrice().toString());
+        holder.date.setText(advertisement.getDate());
+        holder.location.setText(advertisement.getlocation());
     }
 
     @Override
@@ -43,12 +48,18 @@ public class AdvertisementAdapter extends RecyclerView.Adapter<AdvertisementAdap
         ImageView imageView;
         TextView textTitle;
         TextView textDescription;
+        TextView price;
+        TextView date;
+        TextView location;
 
         public AdvertisementViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.imageView);
             textTitle = itemView.findViewById(R.id.textTitle);
             textDescription = itemView.findViewById(R.id.textDescription);
+            price = itemView.findViewById(R.id.price);
+            date = itemView.findViewById(R.id.creationDate);
+            location = itemView.findViewById(R.id.location);
         }
     }
 }
