@@ -26,8 +26,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button button = findViewById(R.id.button3);
-        button.setOnClickListener(view -> openMenu());
+        Button menu = findViewById(R.id.button3);
+        menu.setOnClickListener(view -> openMenu());
+
+        Button login = findViewById(R.id.button);
+        login.setOnClickListener(view -> login());
+
+        Button register = findViewById(R.id.button2);
+        register.setOnClickListener(view -> register());
     }
 
     private void openMenu() {
@@ -35,4 +41,13 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void login(){
+        Intent intent = new Intent(this, Login.class);
+        startActivity(intent);
+    }
+
+    private void register(){
+        Intent intent = new Intent(this, Register.class);
+        startActivity(intent);
+    }
 }

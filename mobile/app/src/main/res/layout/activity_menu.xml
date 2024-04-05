@@ -7,28 +7,56 @@
     android:background="@color/background"
     tools:context=".Menu">
 
-
-    <ImageView
-        android:id="@+id/imageView"
+    <LinearLayout
+        android:id="@+id/topMenu"
         android:layout_width="match_parent"
-        android:layout_height="147dp"
-        app:srcCompat="@drawable/logo"
-        tools:layout_editor_absoluteX="51dp"
-        android:layout_marginBottom="50dp"
-        tools:layout_editor_absoluteY="-221dp" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
+        <!-- Przycisk "New Ad" -->
+        <Button
+            android:id="@+id/newAdButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Ad" />
+
+        <!-- Logo -->
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="147dp"
+            app:srcCompat="@drawable/logo"
+            android:layout_weight="1"
+            android:layout_marginBottom="50dp" />
+
+        <!-- Przycisk "Profile" -->
+        <Button
+            android:id="@+id/profileButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Profile" />
+
+        <!-- Przycisk "Wyloguj" -->
+        <Button
+            android:id="@+id/logoutButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Wyloguj" />
+    </LinearLayout>
+
+    <!-- Tutaj są wyświetlane kategorie -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/Categories"
-        android:layout_below="@id/imageView">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/CategoriesContainer"
-        android:orientation="vertical"
-        />
-    </ScrollView>
+        android:layout_below="@id/topMenu">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/CategoriesContainer"
+            android:orientation="vertical" />
+    </ScrollView>
 
 </RelativeLayout>

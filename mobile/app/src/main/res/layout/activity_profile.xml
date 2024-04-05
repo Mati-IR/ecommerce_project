@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    tools:context=".Profile">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="147dp"
+        android:src="@drawable/logo"
+        android:layout_marginBottom="50dp"/>
+
+    <!-- Profile data fields -->
+    <LinearLayout
+        android:id="@+id/profileData"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@id/imageView"
+        android:padding="16dp"/>
+
+    <!-- Change data form -->
+    <LinearLayout
+        android:id="@+id/changeDataForm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@id/profileData"
+        android:padding="16dp"
+        android:visibility="gone">
+
+        <!-- Input fields -->
+        <EditText
+            android:id="@+id/inputName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Name"/>
+
+        <EditText
+            android:id="@+id/inputEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Email"/>
+
+        <EditText
+            android:id="@+id/inputPhone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Phone"/>
+
+        <EditText
+            android:id="@+id/inputCity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="City"/>
+
+        <EditText
+            android:id="@+id/inputPostalCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Postal Code"/>
+
+        <EditText
+            android:id="@+id/inputStreet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Street"/>
+
+        <EditText
+            android:id="@+id/inputStreetNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Street Number"/>
+
+        <EditText
+            android:id="@+id/inputWebsite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Website"/>
+
+        <!-- Buttons -->
+        <Button
+            android:id="@+id/submitButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Submit"/>
+
+        <Button
+            android:id="@+id/hideFormButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hide Form"/>
+
+    </LinearLayout>
+
+    <!-- Show form button -->
+    <Button
+        android:id="@+id/showFormButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/profileData"
+        android:text="Show Form"/>
+
+    <!-- Success message -->
+    <TextView
+        android:id="@+id/successMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Data updated successfully!"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/showFormButton"
+        android:visibility="gone"/>
+
+</RelativeLayout>

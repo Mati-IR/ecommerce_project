@@ -1,10 +1,13 @@
 package com.example.bazaar;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -24,11 +27,34 @@ import java.util.Objects;
 
 public class Menu extends AppCompatActivity {
 
+    SharedPreferences sharedPreferences;
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
+
+        sharedPreferences = getSharedPreferences("auth_data", Context.MODE_PRIVATE);
+
+        Button logoutButton = findViewById(R.id.logoutButton);
+        logoutButton.setOnClickListener(view -> logout());
+
+        Button profileButton = findViewById(R.id.profileButton);
+        profileButton.setOnClickListener(view -> profile());
+
+        Button newAdButton = findViewById(R.id.newAdButton);
+        newAdButton.setOnClickListener(view -> newAd());
+
+        if(sharedPreferences.getString("user","").isEmpty()){
+            findViewById(R.id.logoutButton).setVisibility(View.GONE);
+            findViewById(R.id.newAdButton).setVisibility(View.GONE);
+            findViewById(R.id.profileButton).setVisibility(View.GONE);
+        }
+        else{
+            findViewById(R.id.logoutButton).setVisibility(View.VISIBLE);
+            findViewById(R.id.newAdButton).setVisibility(View.VISIBLE);
+            findViewById(R.id.profileButton).setVisibility(View.VISIBLE);
+        }
         String url = "http://10.0.2.2:8000/categories";
         //JSONArray categories = new JSONArray();
         Log.d("lol","lol");
@@ -77,5 +103,23 @@ public class Menu extends AppCompatActivity {
         }, volleyError -> Log.d("Error", Objects.requireNonNull(volleyError.getMessage())));
         Volley.newRequestQueue(this).add(request);
 
+    }
+
+    private void logout(){
+        SharedPreferences.Editor edit = sharedPreferences.edit();
+        edit.clear();
+        edit.apply();
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    private void profile(){
+        Intent intent = new Intent(this, Profile.class);
+        startActivity(intent);
+    }
+
+    private void newAd(){
+        Intent intent = new Intent(this, NewAd.class);
+        startActivity(intent);
     }
 }
