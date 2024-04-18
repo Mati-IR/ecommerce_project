@@ -23,17 +23,20 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class Menu extends AppCompatActivity {
 
+
+    ArrayList<String> categories;
     SharedPreferences sharedPreferences;
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
-
+        categories = new ArrayList<>();
         sharedPreferences = getSharedPreferences("auth_data", Context.MODE_PRIVATE);
 
         Button logoutButton = findViewById(R.id.logoutButton);
@@ -69,6 +72,7 @@ public class Menu extends AppCompatActivity {
             for (int i = 0; i < arraySize; i++) {
                 Button button = new Button(this);
                 try {
+                    categories.add(jsonArray.getJSONObject(i).getString("name"));
                     button.setText(jsonArray.getJSONObject(i).getString("name"));
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
@@ -120,6 +124,7 @@ public class Menu extends AppCompatActivity {
 
     private void newAd(){
         Intent intent = new Intent(this, NewAd.class);
+        intent.putExtra("categories", categories);
         startActivity(intent);
     }
 }

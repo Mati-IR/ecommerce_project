@@ -80,13 +80,9 @@ public class Login extends AppCompatActivity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                    }, new Response.ErrorListener() {
-
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Log.e("LoginActivity", "Login Error: " + error.getMessage());
-                            Toast.makeText(Login.this, "Login failed", Toast.LENGTH_SHORT).show();
-                        }
+                    }, error -> {
+                        Log.e("LoginActivity", "Login Error: " + error.getMessage());
+                        Toast.makeText(Login.this, "Login failed", Toast.LENGTH_SHORT).show();
                     }) {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {

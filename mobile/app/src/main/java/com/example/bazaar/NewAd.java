@@ -2,41 +2,137 @@ package com.example.bazaar;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Location;
+import android.location.LocationListener;
+import android.os.Bundle;
 import android.util.Log;
+import android.view.PixelCopy;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.compose.foundation.gestures.ContentInViewNode;
+
 import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonRequest;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NewAd {
+public class NewAd extends AppCompatActivity implements OnMapReadyCallback, LocationListener {
 
     private Context context;
+    private GoogleMap mMap;
+    private Marker marker;
+    private Spinner categorySpinner;
 
-    public NewAd(Context context) {
-        this.context = context;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_new_ad);
+
+        context = this;
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+        EditText addressEditText = findViewById(R.id.address);
+        addressEditText.setEnabled(false);
+        ArrayList<String> categories = getIntent().getStringArrayListExtra("categories");
+        categorySpinner = findViewById(R.id.category);
+        assert categories != null;
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        categorySpinner.setAdapter(adapter);
+
+        Button submitButton = findViewById(R.id.submit_button);
+        submitButton.setOnClickListener(v -> submitForm());
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        // Ustaw domyślną lokalizację na mapie
+        LatLng defaultLocation = new LatLng(0, 0);
+        marker = mMap.addMarker(new MarkerOptions().position(defaultLocation).draggable(true));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 15));
+
+        // Obsługa przesuwania markera na mapie
+        mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+            @Override
+            public void onMarkerDragStart(Marker marker) {}
+
+            @Override
+            public void onMarkerDrag(Marker marker) {}
+
+            @Override
+            public void onMarkerDragEnd(Marker marker) {
+                LatLng newPosition = marker.getPosition();
+                // Aktualizacja adresu w EditText na podstawie nowej pozycji markera
+                updateAddress(newPosition);
+            }
+        });
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {}
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+    @Override
+    public void onProviderEnabled(String provider) {}
+
+    @Override
+    public void onProviderDisabled(String provider) {}
+
+    private void updateAddress(LatLng latLng) {
+        // Tutaj można użyć usług geokodowania, aby przetłumaczyć współrzędne na adres
+        EditText addressEditText = findViewById(R.id.address);
+        addressEditText.setText(latLng.latitude + ", " + latLng.longitude);
     }
 
     public void submitForm() {
         SharedPreferences sharedPreferences = context.getSharedPreferences("UserData", Context.MODE_PRIVATE);
         int userId = sharedPreferences.getInt("userId", -1);
 
-        String selectedCategoryName = "selected_category_name"; // Pobierz nazwę wybranej kategorii
-        int selectedCategoryID = 123; // Pobierz identyfikator wybranej kategorii
+        EditText titleEditText = findViewById(R.id.title);
+        EditText descriptionEditText = findViewById(R.id.description);
+        EditText priceEditText = findViewById(R.id.price);
+        EditText addressEditText = findViewById(R.id.address);
+
+        String title = titleEditText.getText().toString();
+        String description = descriptionEditText.getText().toString();
+        double price = Double.parseDouble(priceEditText.getText().toString());
+        String address = addressEditText.getText().toString();
+        String selectedCategory = categorySpinner.getSelectedItem().toString();
 
         JSONObject newListingData = new JSONObject();
         try {
             newListingData.put("creator_id", userId);
-            newListingData.put("title", "title"); // Pobierz tytuł wpisu z formularza
-            newListingData.put("description", "description"); // Pobierz opis wpisu z formularza
-            newListingData.put("price", 0.0); // Pobierz cenę wpisu z formularza
-            newListingData.put("location", "location"); // Pobierz lokalizację wpisu z formularza
-            newListingData.put("category_id", selectedCategoryID);
+            newListingData.put("title", title);
+            newListingData.put("description", description);
+            newListingData.put("price", price);
+            newListingData.put("location", address);
+            newListingData.put("category", selectedCategory);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -50,9 +146,9 @@ public class NewAd {
                     try {
                         int listingId = response.getInt("listing");
                         Log.d("Listing ID", "Listing ID: " + listingId);
-                        uploadImages(listingId); // Wyślij obrazy, jeśli są
+                        uploadImages(listingId);
                         clearForm();
-                        displaySuccessMessage(); // Wyświetl komunikat o sukcesie
+                        displaySuccessMessage();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -79,7 +175,7 @@ public class NewAd {
             String description = newListingData.getString("description");
             double price = newListingData.getDouble("price");
             String location = newListingData.getString("location");
-            int category_id = newListingData.getInt("category_id");
+            String category = newListingData.getString("category");
 
             // Tutaj możesz dodać dodatkowe warunki walidacji
 
