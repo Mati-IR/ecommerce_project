@@ -15,7 +15,6 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.compose.foundation.gestures.ContentInViewNode;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonArrayRequest;
