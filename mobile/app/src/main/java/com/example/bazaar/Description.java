@@ -1,6 +1,9 @@
 package com.example.bazaar;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -16,7 +19,7 @@ public class Description extends AppCompatActivity implements OnMapReadyCallback
     private double longitude = 0.0; // Współrzędne geograficzne - długość
     private String title = "";
     private String description = "";
-    private String price = "";
+    private double price;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,13 +31,21 @@ public class Description extends AppCompatActivity implements OnMapReadyCallback
         longitude = getIntent().getDoubleExtra("longitude", 0.0);
         title = getIntent().getStringExtra("title");
         description = getIntent().getStringExtra("description");
-        price = getIntent().getStringExtra("price");
+        price = getIntent().getDoubleExtra("price", -1);
 
         // Ustawienie tytułu aktywności
         setTitle(title);
+        TextView tvTitle = findViewById(R.id.titleTextView);
+        TextView tvInfo = findViewById(R.id.descriptionTextView);
+        TextView tvPrice = findViewById(R.id.priceTextView);
 
+        // Ustawienie tytułu ogłoszenia i dodatkowych informacji
+        tvTitle.setText("Tytuł: " + title);
+        tvInfo.setText("Opis: " + description);
+        tvPrice.setText("Cena: " + String.valueOf(price));
         // Inicjalizacja mapy
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        assert mapFragment != null;
         mapFragment.getMapAsync(this);
     }
 
@@ -46,9 +57,8 @@ public class Description extends AppCompatActivity implements OnMapReadyCallback
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 15));
 
         // Dodanie informacji o ogłoszeniu
-        String info = "Opis: " + description + "\nCena: " + price;
-
+        DescriptionAdapter descriptionAdapter = new DescriptionAdapter(this, title, description, price);
         // Przekazanie dodatkowych informacji o ogłoszeniu do adaptera mapy
-        mMap.setInfoWindowAdapter(new DescriptionAdapter(this, title, info));
+        mMap.setInfoWindowAdapter(descriptionAdapter);
     }
 }

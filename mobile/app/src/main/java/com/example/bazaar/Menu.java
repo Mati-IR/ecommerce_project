@@ -84,7 +84,7 @@ public class Menu extends AppCompatActivity {
 
                 buttonLayoutParams.bottomMargin = 16; // Ustaw margines dolny w pikselach
                 button.setLayoutParams(buttonLayoutParams);
-                button.setId(i); // Ustaw unikalne ID dla każdego guzika
+                button.setId(i+1); // Ustaw unikalne ID dla każdego guzika
                 button.setBackgroundColor(getResources().getColor(R.color.button));
                 button.setTextColor(Color.WHITE);
 

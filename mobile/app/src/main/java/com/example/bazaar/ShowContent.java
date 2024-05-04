@@ -38,7 +38,7 @@ public class ShowContent extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        String url = "http://10.0.2.2:8000/listings/" + categoryId;
+        String url = "http://10.0.2.2:8000/listingsByCategory/" + categoryId + "/5";
 
         ArrayList<Advertisement> advertisements = new ArrayList<>();
 
@@ -46,12 +46,10 @@ public class ShowContent extends AppCompatActivity {
             // Tutaj uzyskaj dostęp do JSONArray i jego długości
             int arraySize = jsonArray.length();
 
-
-            // Tworzenie guzików zależnie od długości JSONArray
             for (int i = 0; i < arraySize; i++) {
                 try {
                     JSONObject object = jsonArray.getJSONObject(i);
-                    final Advertisement ad = new Advertisement(0, object.getString("title"), object.getString("description"), object.getString("location"), object.getDouble("price"), object.getString("creation_date"));
+                    final Advertisement ad = new Advertisement(object.getInt("id"),0, object.getString("title"), object.getString("description"), object.getString("location"), object.getDouble("price"), object.getString("creation_date"));
                     advertisements.add(ad);
                 } catch (JSONException e) {
                     throw new RuntimeException(e);

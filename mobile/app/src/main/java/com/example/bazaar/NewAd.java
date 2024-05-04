@@ -2,8 +2,10 @@ package com.example.bazaar;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.PixelCopy;
@@ -14,7 +16,10 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonArrayRequest;
@@ -42,14 +47,17 @@ public class NewAd extends AppCompatActivity implements OnMapReadyCallback, Loca
     private Marker marker;
     private Spinner categorySpinner;
 
+    private static final int PERMISSION_REQUEST_CODE = 100;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_ad);
 
-        context = this;
+        context = getApplicationContext();
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        assert mapFragment != null;
         mapFragment.getMapAsync(this);
 
         EditText addressEditText = findViewById(R.id.address);
@@ -62,18 +70,27 @@ public class NewAd extends AppCompatActivity implements OnMapReadyCallback, Loca
         categorySpinner.setAdapter(adapter);
 
         Button submitButton = findViewById(R.id.submit_button);
-        submitButton.setOnClickListener(v -> submitForm());
+        submitButton.setOnClickListener(v -> {
+            try {
+                submitForm();
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fetchCurrentLocation();
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_CODE);
+        }
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
 
         // Ustaw domyślną lokalizację na mapie
-        LatLng defaultLocation = new LatLng(0, 0);
-        marker = mMap.addMarker(new MarkerOptions().position(defaultLocation).draggable(true));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 15));
-
+        fetchCurrentLocation();
         // Obsługa przesuwania markera na mapie
         mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
             @Override
@@ -87,6 +104,17 @@ public class NewAd extends AppCompatActivity implements OnMapReadyCallback, Loca
                 LatLng newPosition = marker.getPosition();
                 // Aktualizacja adresu w EditText na podstawie nowej pozycji markera
                 updateAddress(newPosition);
+            }
+        });
+
+        // Obsługa kliknięć na mapie
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                // Ustawienie nowej pozycji znacznika na kliknięcie mapy
+                marker.setPosition(latLng);
+                // Aktualizacja adresu w EditText na podstawie nowej pozycji
+                updateAddress(latLng);
             }
         });
     }
@@ -104,15 +132,17 @@ public class NewAd extends AppCompatActivity implements OnMapReadyCallback, Loca
     public void onProviderDisabled(String provider) {}
 
     private void updateAddress(LatLng latLng) {
-        // Tutaj można użyć usług geokodowania, aby przetłumaczyć współrzędne na adres
         EditText addressEditText = findViewById(R.id.address);
-        addressEditText.setText(latLng.latitude + ", " + latLng.longitude);
+        String strLoc = latLng.latitude + ", " + latLng.longitude;
+        addressEditText.setText(strLoc);
+        // Aktualizacja lokalizacji w polu EditText
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
     }
-
-    public void submitForm() {
-        SharedPreferences sharedPreferences = context.getSharedPreferences("UserData", Context.MODE_PRIVATE);
-        int userId = sharedPreferences.getInt("userId", -1);
-
+    public void submitForm() throws JSONException {
+        SharedPreferences sharedPreferences = getSharedPreferences("auth_data",MODE_PRIVATE);
+        String user = sharedPreferences.getString("user", null);
+        assert user != null;
+        JSONObject juser = new JSONObject(user);
         EditText titleEditText = findViewById(R.id.title);
         EditText descriptionEditText = findViewById(R.id.description);
         EditText priceEditText = findViewById(R.id.price);
@@ -122,20 +152,20 @@ public class NewAd extends AppCompatActivity implements OnMapReadyCallback, Loca
         String description = descriptionEditText.getText().toString();
         double price = Double.parseDouble(priceEditText.getText().toString());
         String address = addressEditText.getText().toString();
-        String selectedCategory = categorySpinner.getSelectedItem().toString();
+        String selectedCategory = String.valueOf(categorySpinner.getSelectedItemId());
 
         JSONObject newListingData = new JSONObject();
         try {
-            newListingData.put("creator_id", userId);
+            newListingData.put("creator_id", juser.get("id"));
             newListingData.put("title", title);
             newListingData.put("description", description);
             newListingData.put("price", price);
             newListingData.put("location", address);
-            newListingData.put("category", selectedCategory);
+            newListingData.put("category_id", selectedCategory);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
+        Log.d("listing",newListingData.toString());
         if (!validateFormData(newListingData)) {
             return;
         }
@@ -174,7 +204,7 @@ public class NewAd extends AppCompatActivity implements OnMapReadyCallback, Loca
             String description = newListingData.getString("description");
             double price = newListingData.getDouble("price");
             String location = newListingData.getString("location");
-            String category = newListingData.getString("category");
+            //String category = newListingData.getString("category");
 
             // Tutaj możesz dodać dodatkowe warunki walidacji
 
@@ -200,5 +230,37 @@ public class NewAd extends AppCompatActivity implements OnMapReadyCallback, Loca
     private void displaySuccessMessage() {
         // Tutaj dodaj logikę wyświetlania komunikatu o sukcesie
         Toast.makeText(context, "Listing created successfully!", Toast.LENGTH_SHORT).show();
+    }
+    private void fetchCurrentLocation() {
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (locationManager != null) {
+            // Sprawdź, czy uzyskano uprawnienia do dostępu do lokalizacji
+            if (ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                // Uzyskaj aktualną lokalizację użytkownika
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new LocationListener() {
+                    @Override
+                    public void onLocationChanged(@NonNull Location location) {
+                        // Tutaj możesz użyć lokalizacji location.getLatitude() i location.getLongitude()
+                        LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                        marker = mMap.addMarker(new MarkerOptions().position(currentLocation).draggable(true));
+
+                        // Przybliżenie kamery do aktualnej lokalizacji
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15));
+                    }
+
+                    @Override
+                    public void onProviderEnabled(@NonNull String provider) {}
+
+                    @Override
+                    public void onProviderDisabled(@NonNull String provider) {}
+
+                    @Override
+                    public void onStatusChanged(String provider, int status, Bundle extras) {}
+                });
+            } else {
+                // Poproś użytkownika o uprawnienia dostępu do lokalizacji
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_CODE);
+            }
+        }
     }
 }

@@ -45,14 +45,5 @@
         android:layout_marginStart="16dp"
         android:text="Cena:" />
 
-    <TextView
-        android:id="@+id/locationTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/priceTextView"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="16dp"
-        android:text="Lokalizacja:" />
-
 
 </RelativeLayout>

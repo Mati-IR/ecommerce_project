@@ -8,13 +8,16 @@ public class Advertisement {
     private Double price;
     private String date;
 
-    public Advertisement(int imageResource, String title, String description, String location, Double price, String date) {
+    private int id;
+
+    public Advertisement(int id, int imageResource, String title, String description, String location, Double price, String date) {
         this.imageResource = imageResource;
         this.title = title;
         this.description = description;
         this.location = location;
         this.price = price;
         this.date = date;
+        this.id = id;
     }
 
     public int getImageResource() {
