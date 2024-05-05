@@ -1,18 +1,25 @@
 package com.example.bazaar;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.telecom.Call;
 import android.util.Log;
-import android.view.PixelCopy;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -22,9 +29,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.android.volley.Request;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.JsonRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -36,19 +41,32 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.HttpCookie;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class NewAd extends AppCompatActivity implements OnMapReadyCallback, LocationListener {
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+public class NewAd extends AppCompatActivity {
 
     private Context context;
-    private GoogleMap mMap;
-    private Marker marker;
     private Spinner categorySpinner;
 
-    private static final int PERMISSION_REQUEST_CODE = 100;
-
+    EditText cityEditText;
+    Button addImageButton;
+    private ImageView imageView;
+    ArrayList<Bitmap> imagesList = new ArrayList<>();
+    private static final int PICK_IMAGE_REQUEST = 1;
+    private static final int REQUEST_IMAGE_CAPTURE = 2;
+    private static final int PICK_IMAGE_MULTIPLE = 3;
+    @SuppressLint("IntentReset")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,12 +74,9 @@ public class NewAd extends AppCompatActivity implements OnMapReadyCallback, Loca
 
         context = getApplicationContext();
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        assert mapFragment != null;
-        mapFragment.getMapAsync(this);
-
-        EditText addressEditText = findViewById(R.id.address);
-        addressEditText.setEnabled(false);
+        cityEditText = findViewById(R.id.city);
+        addImageButton = findViewById(R.id.add_image_button);
+        imageView = findViewById(R.id.imageView); // Initialize ImageView
         ArrayList<String> categories = getIntent().getStringArrayListExtra("categories");
         categorySpinner = findViewById(R.id.category);
         assert categories != null;
@@ -77,68 +92,63 @@ public class NewAd extends AppCompatActivity implements OnMapReadyCallback, Loca
                 throw new RuntimeException(e);
             }
         });
+        addImageButton = findViewById(R.id.add_image_button);
+        addImageButton.setOnClickListener(v -> {
+            selectImage();
+        });
+    }
 
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            fetchCurrentLocation();
-        } else {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_CODE);
+    private void selectImage() {
+        final CharSequence[] options = {"Take Photo", "Choose from Gallery", "Cancel"};
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(NewAd.this);
+        builder.setTitle("Add Photo!");
+        builder.setItems(options, (dialog, item) -> {
+            if (options[item].equals("Take Photo")) {
+                Intent takePicture = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(takePicture, REQUEST_IMAGE_CAPTURE);
+            } else if (options[item].equals("Choose from Gallery")) {
+                Intent pickPhoto = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(pickPhoto, PICK_IMAGE_MULTIPLE);
+            } else if (options[item].equals("Cancel")) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_IMAGE_CAPTURE) {
+                Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
+                // Do something with the image captured from camera
+            } else if (requestCode == PICK_IMAGE_MULTIPLE) {
+                if (data.getClipData() != null) {
+                    int count = data.getClipData().getItemCount();
+                    for (int i = 0; i < count; i++) {
+                        Uri imageUri = data.getClipData().getItemAt(i).getUri();
+                        // Do something with each selected image from gallery
+                    }
+                } else if (data.getData() != null) {
+                    Uri imageUri = data.getData();
+                    // Do something with selected image from gallery
+                }
+            }
         }
     }
 
-    @Override
-    public void onMapReady(@NonNull GoogleMap googleMap) {
-        mMap = googleMap;
-
-        // Ustaw domyślną lokalizację na mapie
-        fetchCurrentLocation();
-        // Obsługa przesuwania markera na mapie
-        mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
-            @Override
-            public void onMarkerDragStart(Marker marker) {}
-
-            @Override
-            public void onMarkerDrag(Marker marker) {}
-
-            @Override
-            public void onMarkerDragEnd(Marker marker) {
-                LatLng newPosition = marker.getPosition();
-                // Aktualizacja adresu w EditText na podstawie nowej pozycji markera
-                updateAddress(newPosition);
-            }
-        });
-
-        // Obsługa kliknięć na mapie
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-                // Ustawienie nowej pozycji znacznika na kliknięcie mapy
-                marker.setPosition(latLng);
-                // Aktualizacja adresu w EditText na podstawie nowej pozycji
-                updateAddress(latLng);
-            }
-        });
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {}
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {}
-
-    @Override
-    public void onProviderEnabled(String provider) {}
-
-    @Override
-    public void onProviderDisabled(String provider) {}
-
-    private void updateAddress(LatLng latLng) {
-        EditText addressEditText = findViewById(R.id.address);
-        String strLoc = latLng.latitude + ", " + latLng.longitude;
-        addressEditText.setText(strLoc);
-        // Aktualizacja lokalizacji w polu EditText
-        mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-    }
     public void submitForm() throws JSONException {
+        EditText cityEditText = findViewById(R.id.city);
+        String city = cityEditText.getText().toString();
+
+        if (city.isEmpty()) {
+            Toast.makeText(context, "Please enter a city name", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        LatLng coords = getCoordinatesForCity(city);
+        assert coords != null;
+        String coordsString = coords.latitude + "," + coords.longitude;
         SharedPreferences sharedPreferences = getSharedPreferences("auth_data",MODE_PRIVATE);
         String user = sharedPreferences.getString("user", null);
         assert user != null;
@@ -146,12 +156,10 @@ public class NewAd extends AppCompatActivity implements OnMapReadyCallback, Loca
         EditText titleEditText = findViewById(R.id.title);
         EditText descriptionEditText = findViewById(R.id.description);
         EditText priceEditText = findViewById(R.id.price);
-        EditText addressEditText = findViewById(R.id.address);
 
         String title = titleEditText.getText().toString();
         String description = descriptionEditText.getText().toString();
         double price = Double.parseDouble(priceEditText.getText().toString());
-        String address = addressEditText.getText().toString();
         String selectedCategory = String.valueOf(categorySpinner.getSelectedItemId());
 
         JSONObject newListingData = new JSONObject();
@@ -160,7 +168,7 @@ public class NewAd extends AppCompatActivity implements OnMapReadyCallback, Loca
             newListingData.put("title", title);
             newListingData.put("description", description);
             newListingData.put("price", price);
-            newListingData.put("location", address);
+            newListingData.put("location", coordsString);
             newListingData.put("category_id", selectedCategory);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -206,19 +214,71 @@ public class NewAd extends AppCompatActivity implements OnMapReadyCallback, Loca
             String location = newListingData.getString("location");
             //String category = newListingData.getString("category");
 
-            // Tutaj możesz dodać dodatkowe warunki walidacji
-
             return true; // Zwróć true, jeśli dane są poprawne, w przeciwnym razie false
         } catch (JSONException e) {
             e.printStackTrace();
             return false; // Zwróć false w przypadku błędu parsowania danych
         }
     }
+    private LatLng getCoordinatesForCity(String city) {
+        Geocoder geocoder = new Geocoder(this);
+        try {
+            List<Address> addresses = geocoder.getFromLocationName(city, 1);
+            if (addresses != null && !addresses.isEmpty()) {
+                Address address = addresses.get(0);
+                double latitude = address.getLatitude();
+                double longitude = address.getLongitude();
+                LatLng cityCoordinates = new LatLng(latitude, longitude);
+                Log.d("City Coordinates", "City: " + city + ", Latitude: " + latitude + ", Longitude: " + longitude);
+                return cityCoordinates;
+            } else {
+                Log.d("City Coordinates", "No coordinates found for city: " + city);
+                return null;
+            }
+        } catch (IOException e) {
+            Log.e("Geocoding Error", "Error obtaining coordinates for city: " + city, e);
+        }
+        return null;
+    }
 
     private void uploadImages(int listingId) {
-        // Tutaj dodaj logikę wysyłania obrazów na serwer
-        // W tym przykładzie jest pusta
-        Log.d("Upload Images", "Uploading images for listing ID: " + listingId);
+        ArrayList<Bitmap> images = getImages(); // Pobierz listę obrazów do wysłania
+
+        for (int i = 0; i < images.size(); i++) {
+            Bitmap image = images.get(i);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            image.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+            byte[] imageData = byteArrayOutputStream.toByteArray();
+
+            RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpeg"), imageData);
+
+            String url = "http://10.0.2.2:8000/uploadfile/" + listingId; // Endpoint do wysyłania obrazów
+            okhttp3.Request request = new okhttp3.Request.Builder()
+                    .url(url)
+                    .post(requestBody)
+                    .build();
+
+            OkHttpClient client = new OkHttpClient();
+            try {
+                Response response = client.newCall(request).execute();
+                if (response.isSuccessful()) {
+                    Log.d("Upload Images", "Image uploaded successfully for listing ID: " + listingId);
+                    // Jeśli potrzebujesz, możesz dodać dodatkową logikę obsługi sukcesu
+                } else {
+                    Log.e("Upload Images", "Failed to upload image for listing ID: " + listingId);
+                    // Jeśli potrzebujesz, możesz dodać dodatkową logikę obsługi błędu
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e("Upload Images", "Exception while uploading image for listing ID: " + listingId + ", " + e.getMessage());
+                // Obsłużenie wyjątku w przypadku niepowodzenia wysyłania obrazu
+            }
+        }
+    }
+    private ArrayList<Bitmap> getImages() {
+        // Pobierz listę obrazów do wysłania (np. z zasobów, pamięci urządzenia, kamery itp.)
+        // Tutaj zwrócę pustą listę, ale zaimplementuj odpowiednią logikę pobierania obrazów
+        return new ArrayList<>();
     }
 
     private void clearForm() {
@@ -231,36 +291,6 @@ public class NewAd extends AppCompatActivity implements OnMapReadyCallback, Loca
         // Tutaj dodaj logikę wyświetlania komunikatu o sukcesie
         Toast.makeText(context, "Listing created successfully!", Toast.LENGTH_SHORT).show();
     }
-    private void fetchCurrentLocation() {
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (locationManager != null) {
-            // Sprawdź, czy uzyskano uprawnienia do dostępu do lokalizacji
-            if (ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                // Uzyskaj aktualną lokalizację użytkownika
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new LocationListener() {
-                    @Override
-                    public void onLocationChanged(@NonNull Location location) {
-                        // Tutaj możesz użyć lokalizacji location.getLatitude() i location.getLongitude()
-                        LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                        marker = mMap.addMarker(new MarkerOptions().position(currentLocation).draggable(true));
 
-                        // Przybliżenie kamery do aktualnej lokalizacji
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15));
-                    }
 
-                    @Override
-                    public void onProviderEnabled(@NonNull String provider) {}
-
-                    @Override
-                    public void onProviderDisabled(@NonNull String provider) {}
-
-                    @Override
-                    public void onStatusChanged(String provider, int status, Bundle extras) {}
-                });
-            } else {
-                // Poproś użytkownika o uprawnienia dostępu do lokalizacji
-                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_CODE);
-            }
-        }
-    }
 }

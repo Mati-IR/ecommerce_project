@@ -4,7 +4,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,7 +16,9 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -33,6 +38,8 @@ public class Profile extends AppCompatActivity {
     private JSONObject displayNames;
     SharedPreferences sharedPreferences;
 
+    Button showForm, hideForm, submit;
+    LinearLayout changeDataForm;
     // Pola formularza
     private EditText inputName, inputEmail, inputPhone, inputCity, inputPostalCode, inputStreet, inputStreetNumber, inputWebsite;
 
@@ -51,7 +58,29 @@ public class Profile extends AppCompatActivity {
         inputStreetNumber = findViewById(R.id.inputStreetNumber);
         inputWebsite = findViewById(R.id.inputWebsite);
         sharedPreferences = getSharedPreferences("auth_data", Context.MODE_PRIVATE);
+        changeDataForm = findViewById(R.id.changeDataForm);
+        showForm = findViewById(R.id.showFormButton);
+        hideForm = findViewById(R.id.hideFormButton);
+        submit = findViewById(R.id.submitButton);
         renderData();
+        showForm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               changeDataForm.setVisibility(View.VISIBLE);
+            }
+        });
+        hideForm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeDataForm.setVisibility(View.INVISIBLE);
+            }
+        });
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeData();
+            }
+        });
     }
 
     // Pobieranie danych użytkownika
@@ -85,11 +114,20 @@ public class Profile extends AppCompatActivity {
     // Pobieranie danych użytkownika z serwera
     private void getUserData(String userId) {
         String url = ApiGateway + "/get_user/" + userId;
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest
                 (Request.Method.GET, url, null, response -> {
-                    Log.d(TAG, "Dane użytkownika: " + response.toString());
-                    displayUserData(response);
+                    try {
+                        // Przetwarzanie tablicy JSON
+                        for (int i = 0; i < response.length(); i++) {
+                            JSONObject userData = response.getJSONObject(i);
+                            // Wyświetlenie danych użytkownika
+                            Log.d("user Data", userData.toString());
+                            displayUserData(userData);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Toast.makeText(Profile.this, "Wystąpił problem podczas przetwarzania danych użytkownika.", Toast.LENGTH_SHORT).show();
+                    }
                 }, error -> {
                     Log.e(TAG, "Błąd: " + error.toString());
                     Toast.makeText(Profile.this, "Wystąpił problem podczas pobierania danych użytkownika.", Toast.LENGTH_SHORT).show();
@@ -97,8 +135,9 @@ public class Profile extends AppCompatActivity {
 
         // Dodanie żądania do kolejki Volley
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonObjectRequest);
+        requestQueue.add(jsonArrayRequest);
     }
+
 
     // Walidacja formularza
     private boolean validateForm() {
@@ -184,7 +223,7 @@ public class Profile extends AppCompatActivity {
         // Przygotowanie danych do wysłania na serwer
         JSONObject data = new JSONObject();
         try {
-            data.put("id", new JSONObject(Objects.requireNonNull(sharedPreferences.getString("user",""))));
+            data.put("id", new JSONObject(Objects.requireNonNull(sharedPreferences.getString("user",""))).getString("id"));
             data.put("name", name);
             data.put("email", email);
             data.put("phone", phone);
@@ -193,6 +232,7 @@ public class Profile extends AppCompatActivity {
             data.put("street", street);
             data.put("street_number", streetNumber);
             data.put("website", website);
+            Log.d("change", data.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }

@@ -1,5 +1,6 @@
 package com.example.bazaar;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
@@ -10,6 +11,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 
 public class Description extends AppCompatActivity implements OnMapReadyCallback {
@@ -21,6 +23,7 @@ public class Description extends AppCompatActivity implements OnMapReadyCallback
     private String description = "";
     private double price;
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +45,7 @@ public class Description extends AppCompatActivity implements OnMapReadyCallback
         // Ustawienie tytułu ogłoszenia i dodatkowych informacji
         tvTitle.setText("Tytuł: " + title);
         tvInfo.setText("Opis: " + description);
-        tvPrice.setText("Cena: " + String.valueOf(price));
+        tvPrice.setText("Cena: " + price);
         // Inicjalizacja mapy
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         assert mapFragment != null;
@@ -52,9 +55,17 @@ public class Description extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
-
+        LatLng location = new LatLng(latitude, longitude);
         // Przybliżenie kamery do lokalizacji ogłoszenia
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 15));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 14));
+
+        CircleOptions circleOptions = new CircleOptions()
+                .center(location)
+                .radius(500) // Promień koła w metrach
+                .strokeWidth(2)
+                .strokeColor(getResources().getColor(R.color.round))
+                .fillColor(getResources().getColor(R.color.fill)); // Kolor wypełnienia koła
+        mMap.addCircle(circleOptions);
 
         // Dodanie informacji o ogłoszeniu
         DescriptionAdapter descriptionAdapter = new DescriptionAdapter(this, title, description, price);
