@@ -94,6 +94,8 @@ public class NewAd extends AppCompatActivity {
         submitButton.setOnClickListener(v -> {
             try {
                 submitForm();
+                Intent intent = new Intent(this, Menu.class);
+                startActivity(intent);
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
@@ -183,7 +185,7 @@ public class NewAd extends AppCompatActivity {
         String title = titleEditText.getText().toString();
         String description = descriptionEditText.getText().toString();
         double price = Double.parseDouble(priceEditText.getText().toString());
-        String selectedCategory = String.valueOf(categorySpinner.getSelectedItemId());
+        String selectedCategory = String.valueOf(categorySpinner.getSelectedItemId()+1);
 
         JSONObject newListingData = new JSONObject();
         try {
