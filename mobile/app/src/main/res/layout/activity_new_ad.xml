@@ -28,6 +28,15 @@
             android:layout_marginTop="20dp"
             android:text="Add Image" />
 
+        <ImageView
+            android:id="@+id/selectedImageView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/add_image_button"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:src="@drawable/logo" />
+
         <EditText
             android:id="@+id/title"
             android:layout_width="match_parent"

@@ -67,6 +67,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation ("com.google.android.gms:play-services-maps:18.2.0")
     implementation ("com.squareup.okhttp3:okhttp:4.9.1")
+    implementation ("com.squareup.picasso:picasso:2.71828")
     //implementation ("com.github.esafirm:android-image-picker:3.0.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

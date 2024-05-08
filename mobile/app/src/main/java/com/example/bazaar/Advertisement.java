@@ -43,4 +43,8 @@ public class Advertisement {
     public String getDate() {
         return date;
     }
+
+    public int getId() {
+        return id;
+    }
 }

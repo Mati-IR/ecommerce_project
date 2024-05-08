@@ -18,7 +18,7 @@ public class DescriptionAdapter implements GoogleMap.InfoWindowAdapter {
     private String description;
     private Double price;
     private Context mContext;
-
+    private String imageUrl;
     @SuppressLint("InflateParams")
     public DescriptionAdapter(Context context, String title, String description, double price) {
         mContext = context;

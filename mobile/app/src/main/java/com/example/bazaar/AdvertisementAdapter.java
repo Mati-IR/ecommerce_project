@@ -82,6 +82,7 @@ public class AdvertisementAdapter extends RecyclerView.Adapter<AdvertisementAdap
                         double longitude = Double.parseDouble(coordinates[1].trim());
                         intent.putExtra("latitude", latitude);
                         intent.putExtra("longitude", longitude);
+                        intent.putExtra("id",advertisement.getId());
                         // Uruchomienie nowej aktywności
                         v.getContext().startActivity(intent);
                     }

@@ -6,9 +6,9 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"
+        tools:ignore="SelectedPhotoAccess" />
     <uses-permission android:name="android.permission.WRITE_MEDIA_IMAGES" />
-
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -19,8 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Bazaar"
         android:usesCleartextTraffic="true"
-
-        tools:targetApi="31">
+        >
         <activity
             android:name=".Description"
             android:exported="false" />

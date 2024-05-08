@@ -1,5 +1,6 @@
 package com.example.bazaar;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.telecom.Call;
@@ -49,7 +51,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.Callback;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -66,12 +70,14 @@ public class NewAd extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final int REQUEST_IMAGE_CAPTURE = 2;
     private static final int PICK_IMAGE_MULTIPLE = 3;
+    private Uri selectedImageUri;
     @SuppressLint("IntentReset")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_ad);
 
+        imageView = findViewById(R.id.selectedImageView);
         context = getApplicationContext();
 
         cityEditText = findViewById(R.id.city);
@@ -121,22 +127,39 @@ public class NewAd extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == REQUEST_IMAGE_CAPTURE) {
+                // Pobierz zrobione zdjęcie z danych zwróconych przez Intent
                 Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
-                // Do something with the image captured from camera
+                // Dodaj zrobione zdjęcie do listy imagesList
+                imagesList.add(imageBitmap);
+                // Ustaw zrobione zdjęcie w ImageView
+                imageView.setImageBitmap(imageBitmap);
             } else if (requestCode == PICK_IMAGE_MULTIPLE) {
                 if (data.getClipData() != null) {
                     int count = data.getClipData().getItemCount();
                     for (int i = 0; i < count; i++) {
                         Uri imageUri = data.getClipData().getItemAt(i).getUri();
-                        // Do something with each selected image from gallery
+                        try {
+                            Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+                            imagesList.add(bitmap); // Add selected image to ArrayList
+                            imageView.setImageBitmap(bitmap); // Set selected image to ImageView
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 } else if (data.getData() != null) {
                     Uri imageUri = data.getData();
-                    // Do something with selected image from gallery
+                    try {
+                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+                        imagesList.add(bitmap); // Add selected image to ArrayList
+                        imageView.setImageBitmap(bitmap); // Set selected image to ImageView
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
     }
+
 
     public void submitForm() throws JSONException {
         EditText cityEditText = findViewById(R.id.city);
@@ -242,44 +265,82 @@ public class NewAd extends AppCompatActivity {
     }
 
     private void uploadImages(int listingId) {
-        ArrayList<Bitmap> images = getImages(); // Pobierz listę obrazów do wysłania
+        ArrayList<Bitmap> images = getImages();
+        images.addAll(imagesList);// Pobierz listę obrazów do wysłania
+
+        OkHttpClient client = new OkHttpClient();
 
         for (int i = 0; i < images.size(); i++) {
             Bitmap image = images.get(i);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            image.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+            image.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
             byte[] imageData = byteArrayOutputStream.toByteArray();
 
-            RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpeg"), imageData);
+            RequestBody requestBody = RequestBody.create(MediaType.parse("image/png"), imageData);
+
+            String filename = "image_" + System.currentTimeMillis() + ".png"; // Generuj unikalną nazwę pliku
+            MultipartBody.Builder multipartBuilder = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("file", filename, requestBody); // Dodaj nazwę pliku do części formularza
 
             String url = "http://10.0.2.2:8000/uploadfile/" + listingId; // Endpoint do wysyłania obrazów
             okhttp3.Request request = new okhttp3.Request.Builder()
                     .url(url)
-                    .post(requestBody)
+                    .post(multipartBuilder.build())
                     .build();
 
-            OkHttpClient client = new OkHttpClient();
-            try {
-                Response response = client.newCall(request).execute();
-                if (response.isSuccessful()) {
-                    Log.d("Upload Images", "Image uploaded successfully for listing ID: " + listingId);
-                    // Jeśli potrzebujesz, możesz dodać dodatkową logikę obsługi sukcesu
-                } else {
-                    Log.e("Upload Images", "Failed to upload image for listing ID: " + listingId);
-                    // Jeśli potrzebujesz, możesz dodać dodatkową logikę obsługi błędu
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onResponse(@NonNull okhttp3.Call call, @NonNull Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        // Obsługa poprawnej odpowiedzi
+                        Log.d("Upload Images", "Image uploaded successfully for listing ID: " + listingId);
+                    } else {
+                        Log.e("Upload Images", "Failed to get valid response for listing ID: " + listingId);
+                        // Dodaj kod obsługi błędów dla niepoprawnej odpowiedzi
+                        Log.e("Upload Images", "Error code: " + response.code());
+                    }
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.e("Upload Images", "Exception while uploading image for listing ID: " + listingId + ", " + e.getMessage());
-                // Obsłużenie wyjątku w przypadku niepowodzenia wysyłania obrazu
-            }
+
+                @Override
+                public void onFailure(@NonNull okhttp3.Call call, @NonNull IOException e) {
+                        e.printStackTrace();
+                        Log.e("Upload Images", "IOException while uploading image for listing ID: " + listingId + ", " + e.getMessage());
+                        // Obsłuż błąd
+                    }
+            });
         }
     }
+
     private ArrayList<Bitmap> getImages() {
-        // Pobierz listę obrazów do wysłania (np. z zasobów, pamięci urządzenia, kamery itp.)
-        // Tutaj zwrócę pustą listę, ale zaimplementuj odpowiednią logikę pobierania obrazów
-        return new ArrayList<>();
+        ArrayList<Bitmap> imagesList = new ArrayList<>();
+
+        // Sprawdź, czy użytkownik wyraził zgodę na dostęp do galerii i kamery
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED) {
+
+            // Jeśli użytkownik ma zgodę, sprawdź, czy wybrał zdjęcie z galerii
+            if (selectedImageUri != null) {
+                try {
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImageUri);
+                    imagesList.add(bitmap); // Dodaj wybrane zdjęcie z galerii do listy obrazów
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            // Jeśli użytkownik wybrał nowe zdjęcie aparatem, to zostało już dodane w onActivityResult()
+            // Nie trzeba go dodawać ponownie, więc nie trzeba tu nic robić
+
+        } else {
+            // Jeśli użytkownik nie ma zgodę na dostęp do galerii lub kamery, poproś o nią
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.CAMERA}, REQUEST_IMAGE_CAPTURE);
+            }
+        }
+
+        return imagesList;
     }
+
 
     private void clearForm() {
         // Tutaj dodaj logikę czyszczenia formularza

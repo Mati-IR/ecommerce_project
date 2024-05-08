@@ -3,6 +3,7 @@ package com.example.bazaar;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,6 +14,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.squareup.picasso.Picasso;
 
 public class Description extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -22,6 +24,7 @@ public class Description extends AppCompatActivity implements OnMapReadyCallback
     private String title = "";
     private String description = "";
     private double price;
+    private int id;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -35,21 +38,35 @@ public class Description extends AppCompatActivity implements OnMapReadyCallback
         title = getIntent().getStringExtra("title");
         description = getIntent().getStringExtra("description");
         price = getIntent().getDoubleExtra("price", -1);
+        //String photoUri = getIntent().getStringExtra("photoUri");
+        id = getIntent().getIntExtra("id",-1);
 
         // Ustawienie tytułu aktywności
         setTitle(title);
         TextView tvTitle = findViewById(R.id.titleTextView);
         TextView tvInfo = findViewById(R.id.descriptionTextView);
         TextView tvPrice = findViewById(R.id.priceTextView);
+        ImageView imageView = findViewById(R.id.photoImageView); // ImageView dla zdjęcia
+
 
         // Ustawienie tytułu ogłoszenia i dodatkowych informacji
         tvTitle.setText("Tytuł: " + title);
         tvInfo.setText("Opis: " + description);
         tvPrice.setText("Cena: " + price);
+//        if (photoUri != null && !photoUri.isEmpty()) {
+//            Picasso.get().load(photoUri).into(imageView);
+//        }
         // Inicjalizacja mapy
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         assert mapFragment != null;
         mapFragment.getMapAsync(this);
+
+        int listingId = getIntent().getIntExtra("listing_id", 0);
+        int imgIdx = getIntent().getIntExtra("img_idx", 0);
+
+        // Buduj URL do pobrania obrazu
+        String imageUrl = "http://10.0.2.2:8000/listings/"+ id + "/0/image";
+        Picasso.get().load(imageUrl).into(imageView);
     }
 
     @Override
